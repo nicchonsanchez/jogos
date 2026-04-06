@@ -7,7 +7,7 @@ if (!$roomId) { header('Location: index.php'); exit; }
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ludo King — Nicchon</title>
+  <title>Ludo — Nicchon</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:#080812;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh}
@@ -51,7 +51,13 @@ if (!$roomId) { header('Location: index.php'); exit; }
 
     /* ── SIDEBAR PANELS ── */
     .panel{background:#0e0e1e;border:1px solid #181830;border-radius:8px;padding:12px 14px}
-    .panel-title{font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:#2a2a48;margin-bottom:10px}
+    .panel-title{font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:#2a2a48;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:default}
+    .panel-title.collapsible{cursor:pointer;user-select:none}
+    .panel-title.collapsible:hover{color:#555}
+    .panel-toggle{font-size:.7rem;color:#2a2a48;transition:transform .2s}
+    .panel-toggle.open{transform:rotate(180deg)}
+    .panel-body{overflow:hidden;transition:max-height .25s ease}
+    .panel-body.collapsed{max-height:0!important}
     .player-row{display:flex;align-items:center;gap:8px;padding:4px 0}
     .player-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
     .player-name{font-size:.8rem;color:#888;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -172,7 +178,7 @@ if (!$roomId) { header('Location: index.php'); exit; }
 <body>
 <header>
   <a class="back" href="index.php">← Lobby</a>
-  <span class="header-title">LUDO KING</span>
+  <span class="header-title">Ludo</span>
   <span class="room-code">Sala <strong><?= htmlspecialchars($roomId) ?></strong></span>
 </header>
 
@@ -204,9 +210,14 @@ if (!$roomId) { header('Location: index.php'); exit; }
         <div class="dice-label" id="dice-label">Aguardando...</div>
         <div style="margin-top:8px" id="dice-btn-wrap"></div>
       </div>
-      <div class="panel">
-        <div class="panel-title">Histórico</div>
-        <div class="history-list" id="history-list"></div>
+      <div class="panel" id="history-panel">
+        <div class="panel-title collapsible" id="history-toggle">
+          Histórico
+          <span class="panel-toggle" id="history-arrow">▲</span>
+        </div>
+        <div class="panel-body collapsed" id="history-body" style="max-height:0">
+          <div class="history-list" id="history-list" style="margin-top:8px"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1060,6 +1071,25 @@ if (!myToken) {
   myColor = '';
   mySlot = -1;
 }
+
+// History toggle
+(function() {
+  const toggle = document.getElementById('history-toggle');
+  const body   = document.getElementById('history-body');
+  const arrow  = document.getElementById('history-arrow');
+  toggle.addEventListener('click', () => {
+    const isCollapsed = body.classList.contains('collapsed');
+    if (isCollapsed) {
+      body.classList.remove('collapsed');
+      body.style.maxHeight = '160px';
+      arrow.classList.add('open');
+    } else {
+      body.classList.add('collapsed');
+      body.style.maxHeight = '0';
+      arrow.classList.remove('open');
+    }
+  });
+})();
 
 // Initial board build (for game screen)
 boardCells = buildBoard();
