@@ -25,7 +25,7 @@ function humanCount(array $room): int {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ludo King — Nicchon</title>
+  <title>Ludo — Nicchon</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:#080812;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh}
@@ -72,14 +72,18 @@ function humanCount(array $room): int {
     .color-dot{width:10px;height:10px;border-radius:50%}
     @media(max-width:480px){.mode-cards{grid-template-columns:1fr}header{padding:24px 16px 20px}main{padding:24px 16px 48px}}
   </style>
+  <script src="../shared/player.js"></script>
 </head>
 <body>
 <header>
   <div class="header-inner">
     <div>
       <a class="back" href="../">← Jogos</a>
-      <h1>LUDO <em>KING</em></h1>
+      <h1>LUDO</h1>
       <p class="subtitle">Clássico de tabuleiro · 2-4 jogadores com bots</p>
+    </div>
+    <div id="player-badge" style="font-size:.72rem;color:#333;cursor:pointer;text-align:right;display:none" onclick="PlayerLogin.showSwitch('#a855f7', p => { player=p; updateBadge(); })">
+      <span id="badge-name"></span><br><span style="font-size:.6rem;letter-spacing:1px">trocar conta</span>
     </div>
   </div>
 </header>
@@ -164,15 +168,14 @@ function humanCount(array $room): int {
 </main>
 <script>
 let player = null;
-try { player = JSON.parse(localStorage.getItem('snake_user')); } catch(e) {}
-if (!player?.username) {
-  const u = prompt('Escolha um username:');
-  const n = prompt('Seu nome de exibição:');
-  if (u && n) {
-    player = {username: u.trim(), name: n.trim()};
-    localStorage.setItem('snake_user', JSON.stringify(player));
+function updateBadge() {
+  const b = document.getElementById('player-badge');
+  if (player?.username) {
+    document.getElementById('badge-name').textContent = player.name + ' @' + player.username;
+    b.style.display = 'block';
   }
 }
+PlayerLogin.init('#a855f7', p => { player = p; updateBadge(); });
 
 const $ = id => document.getElementById(id);
 

@@ -97,6 +97,7 @@ function timeAgo(int $ts): string {
       main{padding:24px 16px 48px}
     }
   </style>
+  <script src="../shared/player.js"></script>
 </head>
 <body>
 <header>
@@ -105,6 +106,9 @@ function timeAgo(int $ts): string {
       <a class="back" href="../">← Jogos</a>
       <h1>XADREZ <em>//</em></h1>
       <p class="subtitle">Multiplayer ao vivo ou contra bot</p>
+    </div>
+    <div id="player-badge" style="font-size:.72rem;color:#333;cursor:pointer;text-align:right;display:none" onclick="PlayerLogin.showSwitch('#f59e0b', p => { player=p; updateBadge(); })">
+      <span id="badge-name"></span><br><span style="font-size:.6rem;letter-spacing:1px">trocar conta</span>
     </div>
   </div>
 </header>
@@ -212,12 +216,14 @@ function timeAgo(int $ts): string {
 <script>
 // ── Perfil ────────────────────────────────────────────────────────────────────
 let player = null;
-try { player = JSON.parse(localStorage.getItem('snake_user')); } catch(e) {}
-if (!player?.username) {
-  const u = prompt('Username (3-20 chars, sem espaços):');
-  const n = prompt('Seu nome:');
-  if (u && n) { player = {username:u.trim(),name:n.trim()}; localStorage.setItem('snake_user',JSON.stringify(player)); }
+function updateBadge() {
+  const b = document.getElementById('player-badge');
+  if (player?.username) {
+    document.getElementById('badge-name').textContent = player.name + ' @' + player.username;
+    b.style.display = 'block';
+  }
 }
+PlayerLogin.init('#f59e0b', p => { player = p; updateBadge(); });
 
 // ── Modo selector ─────────────────────────────────────────────────────────────
 document.getElementById('card-pvp').addEventListener('click', () => {
