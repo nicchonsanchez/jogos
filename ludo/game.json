@@ -1,0 +1,7 @@
+{
+  "name": "Ludo King",
+  "slug": "ludo",
+  "description": "Jogo de tabuleiro clássico para 2-4 jogadores com bots",
+  "accent": "#a855f7",
+  "icon": "ludo"
+}
