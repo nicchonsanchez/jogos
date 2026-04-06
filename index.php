@@ -83,6 +83,14 @@ function esc(string $s): string {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..700&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Bauhaus 93';
+      src: url('shared/fonts/bauhaus-93/bauhaus-93.woff2') format('woff2'),
+           url('shared/fonts/bauhaus-93/bauhaus-93.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
     :root {
       --verde:   rgb(13, 226, 138);
       --azul-bg: #0d013a;
@@ -126,20 +134,43 @@ function esc(string $s): string {
 
     .header-brand {
       display: flex;
-      align-items: baseline;
-      gap: 12px;
+      align-items: center;
+      gap: 14px;
     }
     h1 {
       font-size: 2rem;
-      letter-spacing: 4px;
       color: #fff;
-      font-weight: 300;
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Bauhaus 93', 'Open Sans', sans-serif;
+      font-weight: normal;
+      cursor: default;
+      letter-spacing: 1px;
     }
-    h1 strong {
-      color: var(--verde);
-      font-weight: 700;
-      text-shadow: 0 0 24px rgba(13,226,138,.3);
+    h1 .bg-titulo {
+      padding: 0 10px 0 8px;
+      margin-left: 5px;
+      background: linear-gradient(45deg, white, #cfcfcf);
+      border-radius: 10px;
+    }
+    h1 .bg-titulo .degrade-on {
+      background: var(--verde);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: piscar 2s infinite ease-in-out;
+    }
+    @keyframes piscar {
+      0%, 100% {
+        background: var(--verde);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      50% {
+        background: rgb(24, 90, 155);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
     }
     .subtitle {
       color: #9ca3af;
@@ -281,7 +312,7 @@ function esc(string $s): string {
 <header>
   <div class="header-inner">
     <div class="header-brand">
-      <h1>NICCH<strong>ON</strong></h1>
+      <h1>Nicch<span class="bg-titulo"><span class="degrade-on">on</span></span></h1>
       <span class="subtitle">/ jogos</span>
     </div>
     <a class="site-back" href="https://nicchon.com">← nicchon.com</a>
