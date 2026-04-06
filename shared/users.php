@@ -19,7 +19,16 @@ define('USERS_FILE', __DIR__ . '/users.json');
 
 // ── Helpers ────────────────────────────────────────────────
 function loadUsers(): array {
-    if (!file_exists(USERS_FILE)) return [];
+    if (!file_exists(USERS_FILE)) {
+        // Seed inicial com usuários conhecidos (extraídos do records.json do snake)
+        $seed = [
+            ['username' => 'onicksanchez', 'name' => 'Nicchon Sanchez', 'createdAt' => 1743897600],
+            ['username' => 'Snake_poucas',  'name' => 'Poucas',          'createdAt' => 1743897600],
+            ['username' => 'tutu',          'name' => 'piroquebas',       'createdAt' => 1743897600],
+        ];
+        file_put_contents(USERS_FILE, json_encode($seed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        return $seed;
+    }
     $data = json_decode(file_get_contents(USERS_FILE), true);
     return is_array($data) ? $data : [];
 }
