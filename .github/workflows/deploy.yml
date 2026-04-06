@@ -26,3 +26,5 @@ jobs:
             **/tarefas-md/**
             **/AGENTS.md
             **/rooms/*.json
+            shared/users.json
+            snake/records.json
