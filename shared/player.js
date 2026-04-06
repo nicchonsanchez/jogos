@@ -5,16 +5,42 @@
  *   <script src="../shared/player.js"></script>
  *   PlayerLogin.init(accentColor, function(player) {
  *     // player = {username, name}
- *     // continuar inicialização do jogo aqui
  *   });
  *   PlayerLogin.getPlayer() — retorna o jogador atual ou null
- *   PlayerLogin.showSwitch() — abre o modal para trocar conta
+ *   PlayerLogin.showSwitch(accentColor, cb) — abre o modal para trocar conta
+ *
+ * Armazenamento:
+ *   - localStorage: nicchon_user, nicchon_accounts (cache local, rápido)
+ *   - Servidor: shared/users.php → shared/users.json (base única, cross-device)
  */
 (function(global) {
-  const STORAGE_USER     = 'snake_user';
-  const STORAGE_ACCOUNTS = 'snake_accounts';
+  const STORAGE_USER     = 'nicchon_user';
+  const STORAGE_ACCOUNTS = 'nicchon_accounts';
   const MAX_ACCOUNTS     = 6;
 
+  // Detecta o caminho base até shared/ independente do jogo atual
+  function usersApiUrl() {
+    const scripts = document.querySelectorAll('script[src]');
+    for (const s of scripts) {
+      const m = s.src.match(/^(.*shared\/)player\.js/);
+      if (m) return m[1] + 'users.php';
+    }
+    return '../shared/users.php';
+  }
+
+  // Migra dados das chaves antigas (snake_*) para as novas (nicchon_*)
+  (function migrate() {
+    try {
+      if (!localStorage.getItem(STORAGE_USER) && localStorage.getItem('snake_user')) {
+        localStorage.setItem(STORAGE_USER, localStorage.getItem('snake_user'));
+      }
+      if (!localStorage.getItem(STORAGE_ACCOUNTS) && localStorage.getItem('snake_accounts')) {
+        localStorage.setItem(STORAGE_ACCOUNTS, localStorage.getItem('snake_accounts'));
+      }
+    } catch(e) {}
+  })();
+
+  // ── localStorage ───────────────────────────────────────
   function loadAccounts() {
     try { return JSON.parse(localStorage.getItem(STORAGE_ACCOUNTS)) || []; } catch(e) { return []; }
   }
@@ -24,12 +50,31 @@
   function loadUser() {
     try { return JSON.parse(localStorage.getItem(STORAGE_USER)) || null; } catch(e) { return null; }
   }
-  function saveUser(player) {
+  function saveUserLocal(player) {
     localStorage.setItem(STORAGE_USER, JSON.stringify(player));
-    // Add/move to front of accounts list
     let list = loadAccounts().filter(a => a.username !== player.username);
     list.unshift(player);
     saveAccounts(list);
+  }
+
+  // ── API do servidor ────────────────────────────────────
+  async function registerOnServer(player) {
+    try {
+      await fetch(usersApiUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'register', username: player.username, name: player.name })
+      });
+    } catch(e) { /* offline — tudo bem, localStorage basta */ }
+  }
+
+  // Busca contas do servidor para popular o seletor no novo dispositivo
+  async function fetchServerAccounts() {
+    try {
+      const r = await fetch(usersApiUrl() + '?action=list');
+      if (!r.ok) return [];
+      return await r.json();
+    } catch(e) { return []; }
   }
 
   // ── Modal HTML ──────────────────────────────────────────
@@ -41,22 +86,22 @@
       <style>
         #player-login-modal {
           position: fixed; inset: 0; z-index: 9999;
-          background: rgba(8,8,18,.85); backdrop-filter: blur(4px);
+          background: rgba(8,8,15,.88); backdrop-filter: blur(4px);
           display: flex; align-items: center; justify-content: center;
           padding: 16px;
         }
         #player-login-modal .plm-box {
-          background: #0e0e1e; border: 1px solid #181830; border-radius: 12px;
+          background: #0d0d1a; border: 1px solid #1a1a2c; border-radius: 12px;
           padding: 24px; width: 100%; max-width: 360px;
-          font-family: 'Segoe UI', sans-serif; color: #fff;
+          font-family: 'Open Sans','Segoe UI', sans-serif; color: #fff;
         }
         #player-login-modal .plm-title {
           font-size: .6rem; letter-spacing: 2px; text-transform: uppercase;
-          color: #2a2a48; margin-bottom: 16px;
+          color: #252542; margin-bottom: 16px;
         }
         #player-login-modal .plm-tabs {
           display: flex; gap: 0; margin-bottom: 16px;
-          border-bottom: 1px solid #181830;
+          border-bottom: 1px solid #1a1a2c;
         }
         #player-login-modal .plm-tab {
           padding: 7px 16px; font-size: .78rem; cursor: pointer;
@@ -75,18 +120,21 @@
         }
         #player-login-modal .plm-chip {
           padding: 5px 12px; border-radius: 20px; font-size: .78rem;
-          background: #080812; border: 1px solid #1e1e38;
+          background: #08080f; border: 1px solid #1e1e30;
           color: #888; cursor: pointer; transition: all .12s;
           font-family: inherit;
         }
         #player-login-modal .plm-chip:hover {
           border-color: ${c}55; color: ${c};
         }
+        #player-login-modal .plm-loading {
+          font-size: .72rem; color: #252542;
+        }
         #player-login-modal .plm-empty {
-          font-size: .72rem; color: #2a2a48;
+          font-size: .72rem; color: #252542;
         }
         #player-login-modal input {
-          background: #080812; border: 1px solid #1e1e38; border-radius: 5px;
+          background: #08080f; border: 1px solid #1e1e30; border-radius: 5px;
           color: #ddd; font-family: inherit; font-size: .88rem;
           padding: 8px 10px; outline: none; width: 100%;
           transition: border-color .15s;
@@ -105,6 +153,7 @@
           transition: filter .12s; align-self: flex-start;
         }
         #player-login-modal .plm-btn:hover { filter: brightness(1.1); }
+        #player-login-modal .plm-btn:disabled { opacity: .5; cursor: default; filter: none; }
       </style>
       <div class="plm-box">
         <div class="plm-title">Identificação</div>
@@ -115,9 +164,10 @@
 
         <!-- Entrar (contas salvas) -->
         <div class="plm-panel active" id="plm-panel-login">
-          <div id="plm-chips" class="plm-chips"></div>
+          <p class="plm-loading" id="plm-loading">Carregando contas...</p>
+          <div id="plm-chips" class="plm-chips" style="display:none"></div>
           <p class="plm-empty" id="plm-no-accounts" style="display:none">
-            Nenhuma conta salva neste dispositivo.<br>Crie um perfil na aba ao lado.
+            Nenhuma conta neste dispositivo.<br>Crie um perfil na aba ao lado.
           </p>
         </div>
 
@@ -143,28 +193,42 @@
   let _callback = null;
   let _modal    = null;
 
-  function showModal(accentColor, cb) {
+  async function showModal(accentColor, cb) {
     _callback = cb;
     if (_modal) _modal.remove();
     _modal = createModal(accentColor);
     document.body.appendChild(_modal);
 
-    // Populate chips
-    const chips = loadAccounts();
-    const chipsEl = _modal.querySelector('#plm-chips');
-    const noAcc   = _modal.querySelector('#plm-no-accounts');
-    chipsEl.innerHTML = '';
-    if (chips.length === 0) {
-      noAcc.style.display = 'block';
-    } else {
-      noAcc.style.display = 'none';
-      chips.forEach(acc => {
-        const btn = document.createElement('button');
-        btn.className = 'plm-chip';
-        btn.textContent = acc.name + ' @' + acc.username;
-        btn.addEventListener('click', () => selectAccount(acc));
-        chipsEl.appendChild(btn);
-      });
+    // Carrega contas: localStorage primeiro (rápido), depois mescla com servidor
+    const localAccounts  = loadAccounts();
+    const chipsEl        = _modal.querySelector('#plm-chips');
+    const noAcc          = _modal.querySelector('#plm-no-accounts');
+    const loadingEl      = _modal.querySelector('#plm-loading');
+
+    function renderChips(accounts) {
+      chipsEl.innerHTML = '';
+      loadingEl.style.display = 'none';
+      if (accounts.length === 0) {
+        noAcc.style.display = 'block';
+        chipsEl.style.display = 'none';
+        if (_modal) _modal.querySelector('[data-tab="create"]').click();
+      } else {
+        noAcc.style.display = 'none';
+        chipsEl.style.display = 'flex';
+        accounts.forEach(acc => {
+          const btn = document.createElement('button');
+          btn.className = 'plm-chip';
+          btn.textContent = acc.name + ' @' + acc.username;
+          btn.addEventListener('click', () => selectAccount(acc));
+          chipsEl.appendChild(btn);
+        });
+      }
+    }
+
+    // Mostra locais imediatamente
+    if (localAccounts.length > 0) {
+      loadingEl.style.display = 'none';
+      renderChips(localAccounts);
     }
 
     // Tabs
@@ -178,30 +242,35 @@
     });
 
     // Create
-    _modal.querySelector('#plm-create-btn').addEventListener('click', () => {
+    const createBtn = _modal.querySelector('#plm-create-btn');
+    createBtn.addEventListener('click', async () => {
       const u = _modal.querySelector('#plm-username').value.trim().replace(/[^a-zA-Z0-9_]/g,'');
       const n = _modal.querySelector('#plm-name').value.trim();
       const err = _modal.querySelector('#plm-err');
       if (u.length < 3) { err.textContent='Username mínimo 3 chars'; err.style.display='block'; return; }
       if (n.length < 2) { err.textContent='Nome mínimo 2 chars'; err.style.display='block'; return; }
       err.style.display = 'none';
-      selectAccount({username: u, name: n});
+      createBtn.disabled = true;
+      createBtn.textContent = 'Salvando...';
+      await selectAccount({username: u, name: n});
     });
     _modal.querySelector('#plm-username').addEventListener('keydown', e => {
       if (e.key === 'Enter') _modal.querySelector('#plm-name').focus();
     });
     _modal.querySelector('#plm-name').addEventListener('keydown', e => {
-      if (e.key === 'Enter') _modal.querySelector('#plm-create-btn').click();
+      if (e.key === 'Enter') createBtn.click();
     });
 
-    // If accounts exist, auto-focus create tab's username if no accounts
-    if (chips.length === 0) {
-      _modal.querySelector('[data-tab="create"]').click();
+    // Se não havia contas locais, busca do servidor
+    if (localAccounts.length === 0) {
+      const serverAccounts = await fetchServerAccounts();
+      if (_modal) renderChips(serverAccounts);
     }
   }
 
-  function selectAccount(player) {
-    saveUser(player);
+  async function selectAccount(player) {
+    saveUserLocal(player);
+    await registerOnServer(player);
     if (_modal) { _modal.remove(); _modal = null; }
     if (_callback) _callback(player);
   }
@@ -209,10 +278,11 @@
   function init(accentColor, cb) {
     const existing = loadUser();
     if (existing?.username) {
+      // Sincroniza silenciosamente com o servidor em segundo plano
+      registerOnServer(existing);
       cb(existing);
       return;
     }
-    // Wait for DOM
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => showModal(accentColor, cb));
     } else {
