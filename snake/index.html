@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jogo da Cobrinha</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a15;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      padding: 16px;
+      gap: 10px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      letter-spacing: 5px;
+      color: #4ade80;
+      text-shadow: 0 0 24px #4ade8055;
+    }
+
+    /* ── Placar ── */
+    .scoreboard { display: flex; gap: 52px; }
+    .score-box { text-align: center; }
+    .score-box span {
+      display: block;
+      font-size: 0.62rem;
+      letter-spacing: 2px;
+      color: #444;
+      text-transform: uppercase;
+    }
+    .score-box strong { font-size: 1.5rem; color: #4ade80; }
+
+    /* ── Painel de configurações ── */
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      background: #10101e;
+      border: 1px solid #1c1c30;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .cfg-row { display: flex; align-items: center; gap: 8px; }
+    .cfg-label {
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      color: #444;
+      text-transform: uppercase;
+      width: 78px;
+      flex-shrink: 0;
+    }
+    .btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    .opt-btn {
+      padding: 4px 11px;
+      background: transparent;
+      color: #555;
+      border: 1px solid #222238;
+      border-radius: 4px;
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.12s;
+      font-family: inherit;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: #4ade80; color: #4ade80; }
+    .opt-btn.active {
+      background: #4ade8015;
+      border-color: #4ade8055;
+      color: #4ade80;
+      font-weight: 600;
+    }
+    .opt-btn:disabled { opacity: 0.35; cursor: default; }
+
+    .map-btn {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      font-size: 0.76rem;
+    }
+    .map-desc {
+      font-size: 0.7rem;
+      color: #383860;
+      padding-left: 86px;
+      min-height: 14px;
+      transition: color 0.15s;
+    }
+
+    /* ── Overlay ── */
+    #overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 21, 0.9);
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border-radius: 4px;
+    }
+    #overlay.hidden { display: none; }
+
+    .ov-start  { font-size: 1rem;  color: #4ade80; }
+    .ov-go     { font-size: 1.45rem; font-weight: 700; color: #f87171; letter-spacing: 3px; }
+    .ov-pts    { font-size: 0.9rem; color: #ccc; }
+    .ov-record { font-size: 0.8rem; color: #fbbf24; display: none; }
+    .ov-ctrl   { font-size: 0.72rem; color: #444; }
+
+    .play-btn {
+      margin-top: 4px;
+      padding: 9px 30px;
+      background: #4ade80;
+      color: #070710;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+      font-family: inherit;
+      transition: background 0.14s, transform 0.1s;
+    }
+    .play-btn:hover { background: #22c55e; transform: scale(1.04); }
+
+    .hints { font-size: 0.65rem; color: #2a2a45; letter-spacing: 0.5px; }
+
+    /* ── Modais (perfil + ranking) ── */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(8,8,18,0.93);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      backdrop-filter: blur(8px);
+      padding: 16px;
+    }
+    .modal.hidden { display: none; }
+
+    .modal-box {
+      background: #10101e;
+      border: 1px solid #2a2a48;
+      border-radius: 12px;
+      padding: 28px 28px 24px;
+      width: min(380px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-box h2 { color: #4ade80; font-size: 1.2rem; letter-spacing: 1px; }
+    .modal-box > p { color: #666; font-size: 0.82rem; }
+
+    .modal-field { display: flex; flex-direction: column; gap: 5px; }
+    .modal-field label {
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #555;
+    }
+    .modal-field small { color: #383858; font-size: 0.62rem; }
+
+    .modal-input {
+      width: 100%;
+      background: #0a0a16;
+      border: 1px solid #222240;
+      border-radius: 5px;
+      color: #ddd;
+      font-family: inherit;
+      font-size: 0.92rem;
+      padding: 8px 11px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .modal-input:focus { border-color: #4ade8055; }
+    .modal-input.err   { border-color: #f87171aa; }
+
+    .modal-err { color: #f87171; font-size: 0.75rem; display: none; }
+
+    /* cabeçalho do modal de ranking */
+    .rank-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .rank-nav { display: flex; align-items: center; gap: 6px; }
+    .rank-nav-btn {
+      background: transparent;
+      border: 1px solid #222240;
+      border-radius: 4px;
+      color: #555;
+      width: 26px; height: 26px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.12s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rank-nav-btn:hover { border-color: #4ade80; color: #4ade80; }
+    .rank-map-label { color: #bbb; font-size: 0.88rem; min-width: 130px; text-align: center; }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #444;
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 2px;
+      transition: color 0.12s;
+    }
+    .modal-close:hover { color: #fff; }
+
+    /* tabela */
+    .rank-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    .rank-table th {
+      color: #444;
+      font-size: 0.62rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 0 5px 8px;
+      border-bottom: 1px solid #1a1a30;
+    }
+    .rank-table td {
+      padding: 7px 5px;
+      border-bottom: 1px solid #0f0f22;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+    .rank-table .col-pos   { width: 28px; color: #444; font-weight: 600; }
+    .rank-table .col-score { text-align: right; font-weight: 700; color: #ccc; }
+    .rank-table .col-date  { color: #333; font-size: 0.7rem; text-align: right; }
+    .rank-pos-1 td { color: #fbbf24 !important; }
+    .rank-pos-2 td { color: #94a3b8 !important; }
+    .rank-pos-3 td { color: #c07c3a !important; }
+    .rank-mine  td { color: #4ade80 !important; }
+
+    .rank-empty { text-align: center; color: #444; padding: 24px 0; font-size: 0.82rem; }
+    .rank-loading-msg { text-align: center; color: #333; padding: 20px 0; font-size: 0.8rem; }
+    .rank-server-err { text-align: center; color: #f87171; padding: 20px 0; font-size: 0.8rem; }
+
+    /* botão ranking no painel */
+    .btn-rank-open {
+      width: 100%;
+      margin-top: 4px;
+      padding: 5px;
+      background: transparent;
+      border: 1px solid #1a1a30;
+      border-radius: 4px;
+      color: #3a3a60;
+      font-size: 0.68rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.12s;
+    }
+    .btn-rank-open:hover { border-color: #4ade8033; color: #4ade8099; }
+
+    /* ── Abas do modal de perfil ── */
+    .profile-tabs {
+      display: flex;
+      border-bottom: 1px solid #1a1a30;
+      margin-bottom: 4px;
+    }
+    .profile-tab {
+      flex: 1;
+      padding: 9px 4px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #444;
+      font-family: inherit;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.12s;
+      margin-bottom: -1px;
+      letter-spacing: 0.5px;
+    }
+    .profile-tab.active  { color: #4ade80; border-bottom-color: #4ade80; }
+    .profile-tab:hover:not(.active) { color: #888; }
+
+    /* ── Chips de contas salvas ── */
+    .saved-label {
+      font-size: 0.62rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #2e2e50;
+    }
+    .saved-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .account-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #0a0a16;
+      border: 1px solid #1e1e38;
+      border-radius: 20px;
+      padding: 5px 8px 5px 11px;
+      cursor: pointer;
+      transition: border-color 0.12s;
+    }
+    .account-chip:hover { border-color: #4ade8044; }
+    .chip-name  { font-size: 0.8rem;  color: #aaa; }
+    .chip-user  { font-size: 0.68rem; color: #383858; }
+    .chip-del {
+      background: none;
+      border: none;
+      color: #252545;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0 2px;
+      cursor: pointer;
+      transition: color 0.12s;
+      flex-shrink: 0;
+    }
+    .chip-del:hover { color: #f87171; }
+
+    /* Info do jogador logado no painel */
+    #player-info {
+      font-size: 0.68rem;
+      color: #383858;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 0;
+    }
+    #player-info strong { color: #4ade8077; font-weight: 600; }
+    #btn-trocar-conta {
+      background: none;
+      border: none;
+      color: #2a2a48;
+      font-size: 0.65rem;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: underline;
+      padding: 0;
+      transition: color 0.12s;
+    }
+    #btn-trocar-conta:hover { color: #888; }
+
+    /* badge de posição pós-envio */
+    #rank-badge {
+      font-size: 0.72rem;
+      color: #4ade80;
+      display: none;
+      text-align: right;
+      padding-right: 2px;
+    }
+
+    /* ── D-Pad mobile ── */
+    .dpad {
+      display: none;
+      grid-template-columns: repeat(3, 62px);
+      grid-template-rows: repeat(3, 62px);
+      gap: 6px;
+    }
+    .dpad-btn {
+      background: #10101e;
+      border: 1px solid #1c1c30;
+      border-radius: 10px;
+      color: #4ade80;
+      font-size: 1.3rem;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.08s, border-color 0.08s;
+    }
+    .dpad-btn:active {
+      background: #4ade8022;
+      border-color: #4ade8066;
+    }
+
+    /* ── Responsivo ── */
+    #canvas-wrapper {
+      position: relative;
+      width: min(400px, calc(100vw - 32px));
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      border: 2px solid #1a1a30;
+      border-radius: 6px;
+      touch-action: none;
+    }
+    .panel {
+      width: min(400px, calc(100vw - 32px));
+    }
+
+    @media (pointer: coarse) {
+      .dpad { display: grid; }
+      .hints { display: none; }
+      .map-btn { width: 36px; height: 36px; font-size: 0.82rem; }
+      .opt-btn { padding: 6px 13px; }
+      .play-btn { padding: 13px 36px; font-size: 1rem; }
+    }
+
+    /* Telas muito baixas (ex: iPhone SE paisagem) */
+    @media (max-height: 680px) and (pointer: coarse) {
+      h1 { font-size: 1.3rem; }
+      .dpad { grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(3, 52px); gap: 5px; }
+      body { gap: 6px; padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>COBRINHA</h1>
+
+<div class="scoreboard">
+  <div class="score-box"><span>Pontos</span><strong id="score">0</strong></div>
+  <div class="score-box"><span>Recorde</span><strong id="highscore">0</strong></div>
+</div>
+
+<div class="panel">
+  <div class="cfg-row">
+    <span class="cfg-label">Velocidade</span>
+    <div class="btn-group" id="speed-group"></div>
+  </div>
+  <div class="cfg-row">
+    <span class="cfg-label">Mapa</span>
+    <div class="btn-group" id="map-group"></div>
+  </div>
+  <div class="map-desc" id="map-desc"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <button class="btn-rank-open" id="btn-show-rank">Ver Ranking</button>
+    <span id="rank-badge"></span>
+  </div>
+  <div id="player-info" style="display:none">
+    Jogando como <strong id="player-label"></strong>
+    <button id="btn-trocar-conta">trocar conta</button>
+  </div>
+</div>
+
+<div id="canvas-wrapper">
+  <canvas id="game" width="400" height="400"></canvas>
+  <div id="overlay">
+    <span class="ov-start" id="ov-start">Pronto para jogar?</span>
+    <span class="ov-go"    id="ov-go"    style="display:none">GAME OVER</span>
+    <span class="ov-pts"   id="ov-pts"   style="display:none"></span>
+    <span class="ov-record"id="ov-rec"></span>
+    <button class="play-btn" id="btn-play">Iniciar</button>
+    <span class="ov-ctrl" id="ov-ctrl">Setas ou WASD para mover</span>
+  </div>
+</div>
+
+<!-- D-pad (visível apenas em touch) -->
+<div class="dpad" id="dpad" aria-label="Controles direcionais">
+  <div></div>
+  <button class="dpad-btn" data-dir="up"    aria-label="Cima">▲</button>
+  <div></div>
+  <button class="dpad-btn" data-dir="left"  aria-label="Esquerda">◀</button>
+  <div></div>
+  <button class="dpad-btn" data-dir="right" aria-label="Direita">▶</button>
+  <div></div>
+  <button class="dpad-btn" data-dir="down"  aria-label="Baixo">▼</button>
+  <div></div>
+</div>
+
+<p class="hints">ESC — pausar &nbsp;&nbsp;|&nbsp;&nbsp; Enter — reiniciar</p>
+
+<!-- ── Modal: perfil (login / criar) ── -->
+<div id="modal-user" class="modal">
+  <div class="modal-box">
+    <h2 id="modal-user-title">Bem-vindo!</h2>
+
+    <!-- Abas -->
+    <div class="profile-tabs">
+      <button class="profile-tab active" data-mode="login">Entrar</button>
+      <button class="profile-tab" data-mode="create">Criar perfil</button>
+    </div>
+
+    <!-- ── Aba: Entrar ── -->
+    <div id="mode-login">
+      <!-- Contas salvas no dispositivo -->
+      <div id="saved-accounts-section" style="display:none;flex-direction:column;gap:6px">
+        <span class="saved-label">Contas salvas neste dispositivo</span>
+        <div class="saved-chips" id="saved-chips"></div>
+        <div style="height:1px;background:#141428;margin:2px 0"></div>
+      </div>
+
+      <div class="modal-field">
+        <label>Ou digite o username</label>
+        <input class="modal-input" id="inp-login-user" type="text"
+               maxlength="20" placeholder="seu username"
+               autocomplete="off" spellcheck="false">
+      </div>
+      <span class="modal-err" id="login-err"></span>
+      <button class="play-btn" id="btn-login">Entrar</button>
+    </div>
+
+    <!-- ── Aba: Criar perfil ── -->
+    <div id="mode-create" style="display:none">
+      <div class="modal-field">
+        <label>Username <small>(letras, números, _ &nbsp;|&nbsp; 3–20 caracteres)</small></label>
+        <input class="modal-input" id="inp-username" type="text"
+               maxlength="20" placeholder="ex: cobra_mestre"
+               autocomplete="off" spellcheck="false">
+        <span class="modal-err" id="username-taken-err" style="margin-top:4px"></span>
+      </div>
+      <div class="modal-field">
+        <label>Nome</label>
+        <input class="modal-input" id="inp-name" type="text"
+               maxlength="50" placeholder="ex: Nicolas Souza">
+      </div>
+      <span class="modal-err" id="profile-err"></span>
+      <button class="play-btn" id="btn-save-profile">Criar perfil</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal: ranking ── -->
+<div id="modal-rank" class="modal hidden">
+  <div class="modal-box">
+    <div class="rank-header">
+      <div class="rank-nav">
+        <button class="rank-nav-btn" id="btn-rank-prev">&#9664;</button>
+        <span class="rank-map-label" id="rank-map-label"></span>
+        <button class="rank-nav-btn" id="btn-rank-next">&#9654;</button>
+      </div>
+      <button class="modal-close" id="btn-close-rank" title="Fechar">&times;</button>
+    </div>
+    <div id="rank-content"><p class="rank-loading-msg">Carregando...</p></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  Constantes
+// ═══════════════════════════════════════════════════════════════
+const canvas = document.getElementById('game');
+const ctx    = canvas.getContext('2d');
+const TILE   = 20;
+const COLS   = canvas.width  / TILE;   // 20
+const ROWS   = canvas.height / TILE;   // 20
+
+// Polyfill para ctx.roundRect (navegadores antigos)
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    r = Math.min(r || 0, w / 2, h / 2);
+    this.moveTo(x + r, y);
+    this.arcTo(x + w, y,     x + w, y + h, r);
+    this.arcTo(x + w, y + h, x,     y + h, r);
+    this.arcTo(x,     y + h, x,     y,     r);
+    this.arcTo(x,     y,     x + w, y,     r);
+    this.closePath();
+  };
+}
+
+const SPEEDS      = [175, 110, 65];
+const SPEED_NAMES = ['Devagar', 'Normal', 'Rapido'];
+
+// ═══════════════════════════════════════════════════════════════
+//  Auxiliares para gerar obstáculos
+// ═══════════════════════════════════════════════════════════════
+const hLine = (y, x1, x2) => { const t=[]; for(let x=x1;x<=x2;x++) t.push({x,y}); return t; };
+const vLine = (x, y1, y2) => { const t=[]; for(let y=y1;y<=y2;y++) t.push({x,y}); return t; };
+function border() {
+  const t = [];
+  for (let x = 0; x < COLS; x++) { t.push({x, y:0}); t.push({x, y:ROWS-1}); }
+  for (let y = 1; y < ROWS-1; y++) { t.push({x:0, y}); t.push({x:COLS-1, y}); }
+  return t;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Definição dos 10 mapas
+//  Grade 20×20 (índices 0-19). Cobra inicia em (10,10) + (9,10).
+// ═══════════════════════════════════════════════════════════════
+const MAP_DEFS = [
+  {
+    name: 'Livre',
+    desc: 'Sem paredes — cobra atravessa as bordas e reaparece do outro lado',
+    wrap: true,
+    gen: () => []
+  },
+  {
+    name: 'Caixa',
+    desc: 'Paredes nas quatro bordas — a morte está logo ali',
+    wrap: false,
+    gen: () => border()
+  },
+  {
+    name: 'Cruz',
+    desc: 'Cruz no centro com passagem de 5 tiles em cada braço',
+    wrap: false,
+    gen: () => [
+      ...border(),
+      // Barra horizontal: y=10, gap x=8..12
+      ...hLine(10, 1, 7), ...hLine(10, 13, 18),
+      // Barra vertical: x=10, gap y=8..12
+      ...vLine(10, 1, 7), ...vLine(10, 13, 18),
+    ]
+  },
+  {
+    name: 'Janelas',
+    desc: 'Duas paredes horizontais com aberturas em lados opostos',
+    wrap: false,
+    gen: () => [
+      ...border(),
+      ...hLine(6,  1, 13),   // abertura direita  x=14..18
+      ...hLine(13, 6, 18),   // abertura esquerda x=1..5
+    ]
+  },
+  {
+    name: 'Corredor',
+    desc: 'Três corredores em S — siga o zigue-zague',
+    wrap: false,
+    gen: () => [
+      ...border(),
+      ...hLine(5,  1, 14),   // abertura direita  x=15..18
+      ...hLine(11, 5, 18),   // abertura esquerda x=1..4
+      ...hLine(16, 1, 14),   // abertura direita  x=15..18
+    ]
+  },
+  {
+    name: 'Colunas',
+    desc: 'Três colunas verticais com passagem horizontal no centro',
+    wrap: false,
+    gen: () => [
+      ...border(),
+      // Coluna x=5: gap em y=9,10
+      ...vLine(5,  1,  8), ...vLine(5,  11, 18),
+      // Coluna x=10: gap em y=9,10
+      ...vLine(10, 1,  8), ...vLine(10, 11, 18),
+      // Coluna x=15: gap em y=9,10
+      ...vLine(15, 1,  8), ...vLine(15, 11, 18),
+    ]
+  },
+  {
+    name: 'Grade',
+    desc: 'Grade 3×3 com passagens de 3 tiles em cada cruzamento',
+    wrap: false,
+    gen: () => {
+      const obs  = [...border()];
+      const GAPS = [4,5,6, 9,10,11, 14,15,16];   // 3 faixas de 3 tiles
+      [5,10,15].forEach(x => {
+        for (let y = 1; y <= 18; y++) if (!GAPS.includes(y)) obs.push({x, y});
+      });
+      [5,10,15].forEach(y => {
+        for (let x = 1; x <= 18; x++) if (!GAPS.includes(x)) obs.push({x, y});
+      });
+      return obs;
+    }
+  },
+  {
+    name: 'Fortaleza',
+    desc: 'Retângulo interno com uma abertura por lado — dentro e fora',
+    wrap: false,
+    gen: () => {
+      const obs = [...border()];
+      // Retângulo interno: x=4..15, y=4..15
+      for (let x = 4; x <= 15; x++) {
+        if (x !== 10) obs.push({x, y:4});    // topo:  abertura x=10
+        if (x !== 9)  obs.push({x, y:15});   // base:  abertura x=9
+      }
+      for (let y = 5; y <= 14; y++) {
+        if (y !== 9)  obs.push({x:4,  y});   // esq:   abertura y=9
+        if (y !== 10) obs.push({x:15, y});   // dir:   abertura y=10
+      }
+      return obs;
+    }
+  },
+  {
+    name: 'Labirinto',
+    desc: 'Cinco paredes em zigue-zague — uma abertura alternando esq/dir',
+    wrap: false,
+    gen: () => [
+      ...border(),
+      ...hLine(3,  1, 12),   // abertura direita  x=13..18
+      ...hLine(6,  7, 18),   // abertura esquerda x=1..6
+      ...hLine(9,  1, 12),   // abertura direita
+      ...hLine(12, 7, 18),   // abertura esquerda
+      ...hLine(16, 1, 12),   // abertura direita
+    ]
+  },
+  {
+    name: 'Caos',
+    desc: 'Obstáculos espalhados por todo o mapa — boa sorte',
+    wrap: false,
+    gen: () => [
+      ...border(),
+      // Faixa superior
+      {x:3,y:2},{x:3,y:3},{x:3,y:4},
+      {x:7,y:2},{x:8,y:2},
+      {x:12,y:2},{x:12,y:3},
+      {x:16,y:2},{x:17,y:2},{x:17,y:3},
+      // Segunda faixa
+      {x:2,y:6},{x:2,y:7},
+      {x:5,y:5},{x:6,y:5},{x:6,y:6},
+      {x:10,y:6},{x:10,y:7},            // (10,6) e (10,7) — longe do start (10,10)
+      {x:13,y:5},{x:14,y:5},
+      {x:17,y:6},{x:17,y:7},
+      // Centro-superior (start (10,10) e (9,10) mantidos livres)
+      {x:2,y:11},{x:3,y:11},
+      {x:6,y:10},{x:7,y:10},{x:7,y:11},
+      {x:13,y:11},{x:13,y:12},
+      {x:16,y:10},{x:17,y:10},
+      // Centro-inferior
+      {x:3,y:13},{x:4,y:13},{x:4,y:14},
+      {x:8,y:13},{x:8,y:14},
+      {x:11,y:13},{x:12,y:13},
+      {x:15,y:13},{x:16,y:13},{x:16,y:14},
+      // Faixa inferior
+      {x:2,y:16},{x:2,y:17},
+      {x:5,y:16},{x:6,y:16},
+      {x:9,y:17},{x:10,y:17},
+      {x:13,y:16},{x:14,y:16},
+      {x:17,y:16},{x:17,y:17},
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  Estado do jogo
+// ═══════════════════════════════════════════════════════════════
+let snake, dir, nextDir, food;
+let score = 0, gameLoop = null;
+let paused = false, started = false, waitingFirstInput = false;
+let obstacleSet = new Set();
+let selMap = 0, selSpeed = 1;
+
+// ═══════════════════════════════════════════════════════════════
+//  Persistência (recorde por mapa)
+// ═══════════════════════════════════════════════════════════════
+const getHS = i  => parseInt(localStorage.getItem(`hs_${i}`) || '0');
+const setHS = (i, v) => localStorage.setItem(`hs_${i}`, v);
+
+// ═══════════════════════════════════════════════════════════════
+//  Referências DOM
+// ═══════════════════════════════════════════════════════════════
+const scoreEl   = document.getElementById('score');
+const hsEl      = document.getElementById('highscore');
+const overlay   = document.getElementById('overlay');
+const ovStart   = document.getElementById('ov-start');
+const ovGO      = document.getElementById('ov-go');
+const ovPts     = document.getElementById('ov-pts');
+const ovRec     = document.getElementById('ov-rec');
+const btnPlay   = document.getElementById('btn-play');
+const mapDescEl = document.getElementById('map-desc');
+
+// ═══════════════════════════════════════════════════════════════
+//  Constrói botões de velocidade
+// ═══════════════════════════════════════════════════════════════
+const speedGroup = document.getElementById('speed-group');
+SPEED_NAMES.forEach((name, i) => {
+  const b = document.createElement('button');
+  b.className = 'opt-btn' + (i === selSpeed ? ' active' : '');
+  b.textContent = name;
+  b.addEventListener('click', () => {
+    if (started) return;
+    selSpeed = i;
+    speedGroup.querySelectorAll('.opt-btn').forEach((btn, j) =>
+      btn.classList.toggle('active', j === i)
+    );
+  });
+  speedGroup.appendChild(b);
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  Constrói botões de mapa
+// ═══════════════════════════════════════════════════════════════
+const mapGroup = document.getElementById('map-group');
+MAP_DEFS.forEach((m, i) => {
+  const b = document.createElement('button');
+  b.className = 'opt-btn map-btn' + (i === selMap ? ' active' : '');
+  b.textContent = i + 1;
+  b.title = m.name;
+  b.addEventListener('mouseenter', () => {
+    mapDescEl.textContent = `${m.name} — ${m.desc}`;
+    mapDescEl.style.color = '#666';
+  });
+  b.addEventListener('mouseleave', () => updateDesc());
+  b.addEventListener('click', () => {
+    if (started) return;
+    selMap = i;
+    mapGroup.querySelectorAll('.map-btn').forEach((btn, j) =>
+      btn.classList.toggle('active', j === i)
+    );
+    hsEl.textContent = getHS(selMap);
+    updateDesc();
+    previewMap();
+  });
+  mapGroup.appendChild(b);
+});
+
+function updateDesc() {
+  const m = MAP_DEFS[selMap];
+  mapDescEl.textContent = `${m.name} — ${m.desc}`;
+  mapDescEl.style.color = '#383860';
+}
+updateDesc();
+
+// ═══════════════════════════════════════════════════════════════
+//  Obstáculos
+// ═══════════════════════════════════════════════════════════════
+function buildObstacles() {
+  obstacleSet = new Set(MAP_DEFS[selMap].gen().map(t => `${t.x},${t.y}`));
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Lógica principal
+// ═══════════════════════════════════════════════════════════════
+function init() {
+  buildObstacles();
+  snake   = [{ x:10, y:10 }, { x:9, y:10 }];
+  dir     = { x:1, y:0 };
+  nextDir = { x:1, y:0 };
+  score   = 0;
+  paused  = false;
+  started = true;
+  scoreEl.textContent = 0;
+  hsEl.textContent    = getHS(selMap);
+  spawnFood();
+}
+
+function spawnFood() {
+  let pos;
+  do {
+    pos = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
+  } while (
+    snake.some(s => s.x === pos.x && s.y === pos.y) ||
+    obstacleSet.has(`${pos.x},${pos.y}`)
+  );
+  food = pos;
+}
+
+function step() {
+  if (paused) return;
+
+  dir = { ...nextDir };
+  let head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+  if (MAP_DEFS[selMap].wrap) {
+    // Cobra atravessa borda
+    if (head.x < 0) head.x = COLS - 1;
+    else if (head.x >= COLS) head.x = 0;
+    if (head.y < 0) head.y = ROWS - 1;
+    else if (head.y >= ROWS) head.y = 0;
+  } else {
+    // Colisão com borda do canvas
+    if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) return endGame();
+  }
+
+  // Colisão com obstáculo
+  if (obstacleSet.has(`${head.x},${head.y}`)) return endGame();
+  // Colisão consigo mesmo
+  if (snake.some(s => s.x === head.x && s.y === head.y)) return endGame();
+
+  snake.unshift(head);
+
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    scoreEl.textContent = score;
+    const hs = getHS(selMap);
+    if (score > hs) {
+      setHS(selMap, score);
+      hsEl.textContent = score;
+    }
+    spawnFood();
+    // Atualiza velocidade progressiva
+    clearInterval(gameLoop);
+    gameLoop = setInterval(step, getCurrentInterval());
+  } else {
+    snake.pop();
+  }
+
+  draw();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Renderização
+// ═══════════════════════════════════════════════════════════════
+function draw() {
+  // Fundo
+  ctx.fillStyle = '#080812';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Grade sutil
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x <= COLS; x++) {
+    ctx.beginPath(); ctx.moveTo(x*TILE, 0); ctx.lineTo(x*TILE, canvas.height); ctx.stroke();
+  }
+  for (let y = 0; y <= ROWS; y++) {
+    ctx.beginPath(); ctx.moveTo(0, y*TILE); ctx.lineTo(canvas.width, y*TILE); ctx.stroke();
+  }
+
+  // Obstáculos
+  obstacleSet.forEach(key => {
+    const [ox, oy] = key.split(',').map(Number);
+    const tx = ox * TILE, ty = oy * TILE;
+
+    // Preenchimento base
+    ctx.fillStyle = '#1e1e40';
+    ctx.beginPath();
+    ctx.roundRect(tx + 1, ty + 1, TILE - 2, TILE - 2, 2);
+    ctx.fill();
+
+    // Borda superior + esquerda (highlight)
+    ctx.strokeStyle = '#5858a8';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(tx + 1,        ty + TILE - 1);
+    ctx.lineTo(tx + 1,        ty + 1);
+    ctx.lineTo(tx + TILE - 1, ty + 1);
+    ctx.stroke();
+
+    // Borda inferior + direita (sombra)
+    ctx.strokeStyle = '#0c0c22';
+    ctx.beginPath();
+    ctx.moveTo(tx + TILE - 1, ty + 1);
+    ctx.lineTo(tx + TILE - 1, ty + TILE - 1);
+    ctx.lineTo(tx + 1,        ty + TILE - 1);
+    ctx.stroke();
+  });
+
+  // Comida
+  if (food) {
+    const fx = food.x * TILE + TILE / 2;
+    const fy = food.y * TILE + TILE / 2;
+    ctx.fillStyle   = '#f87171';
+    ctx.shadowColor = '#f87171';
+    ctx.shadowBlur  = 18;
+    ctx.beginPath();
+    ctx.arc(fx, fy, TILE / 2 - 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // Cobra
+  if (snake && snake.length) {
+    snake.forEach((seg, i) => {
+      const t = 1 - (i / snake.length) * 0.5;
+      ctx.fillStyle   = i === 0 ? '#4ade80' : `rgb(${Math.floor(22*t)},${Math.floor(188*t)},${Math.floor(88*t)})`;
+      ctx.shadowColor = i === 0 ? '#4ade80' : 'transparent';
+      ctx.shadowBlur  = i === 0 ? 14 : 0;
+      const p = i === 0 ? 1 : 2;
+      ctx.beginPath();
+      ctx.roundRect(seg.x*TILE + p, seg.y*TILE + p, TILE - p*2, TILE - p*2, i === 0 ? 6 : 3);
+      ctx.fill();
+    });
+    ctx.shadowBlur = 0;
+  }
+}
+
+function drawPaused() {
+  draw();
+  ctx.fillStyle = 'rgba(8,8,18,0.55)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle    = '#fff';
+  ctx.font         = 'bold 22px Segoe UI';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('PAUSADO', canvas.width / 2, canvas.height / 2);
+  ctx.textAlign    = 'left';
+  ctx.textBaseline = 'alphabetic';
+}
+
+// Pré-visualiza o mapa no canvas enquanto o overlay está aberto
+function previewMap() {
+  buildObstacles();
+  food  = null;
+  snake = [];
+  draw();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Fluxo do jogo
+// ═══════════════════════════════════════════════════════════════
+function endGame() {
+  clearInterval(gameLoop);
+  started = false;
+  waitingFirstInput = false;
+  setOptBtnsEnabled(true);
+
+  const hs  = getHS(selMap);
+  const rec = score > 0 && score >= hs;
+
+  ovStart.style.display = 'none';
+  ovGO.style.display    = 'block';
+  ovPts.textContent     = `Pontuação: ${score}`;
+  ovPts.style.display   = 'block';
+
+  if (rec && score === hs && score > 0) {
+    ovRec.textContent   = 'NOVO RECORDE!';
+    ovRec.style.display = 'block';
+  } else {
+    ovRec.style.display = 'none';
+  }
+
+  btnPlay.textContent = 'Jogar Novamente';
+  overlay.classList.remove('hidden');
+
+  // Envia score ao servidor e mostra posição no ranking
+  const badgeEl = document.getElementById('rank-badge');
+  badgeEl.style.display = 'none';
+  if (score > 0) {
+    submitScore(selMap, score).then(res => {
+      if (res?.position) {
+        badgeEl.textContent   = `#${res.position} no ranking deste mapa`;
+        badgeEl.style.display = 'block';
+      }
+    });
+  }
+}
+
+function startGame() {
+  clearInterval(gameLoop);
+  init();
+  ovStart.style.display = 'none';
+  ovGO.style.display    = 'none';
+  ovPts.style.display   = 'none';
+  ovRec.style.display   = 'none';
+  overlay.classList.add('hidden');
+  setOptBtnsEnabled(false);
+  waitingFirstInput = true;   // aguarda primeira direção
+  drawWaiting();
+}
+
+// Chamado quando o jogador pressiona a primeira direção
+function beginMoving(nd) {
+  if (!waitingFirstInput) return;
+  waitingFirstInput = false;
+  dir     = { ...nd };
+  nextDir = { ...nd };
+  gameLoop = setInterval(step, getCurrentInterval());
+}
+
+// Desenha cobra parada + mensagem de instrução
+function drawWaiting() {
+  draw();
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+  const msg = isTouch ? 'Toque uma direção para começar' : 'Pressione uma direção para começar';
+  const pad = 6, h = 26;
+  ctx.fillStyle = 'rgba(8,8,18,0.75)';
+  ctx.fillRect(0, canvas.height - h - pad, canvas.width, h + pad);
+  ctx.fillStyle    = '#4ade80';
+  ctx.font         = '12px Segoe UI';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(msg, canvas.width / 2, canvas.height - h / 2 - pad / 2);
+  ctx.textAlign    = 'left';
+  ctx.textBaseline = 'alphabetic';
+}
+
+function setOptBtnsEnabled(on) {
+  document.querySelectorAll('.opt-btn').forEach(b => { b.disabled = !on; });
+}
+
+// Intervalo atual baseado no score (velocidade progressiva)
+// Começa 40% mais lento que o máximo do nível e acelera até o máximo em 25 comidas
+function getCurrentInterval() {
+  const maxMs   = SPEEDS[selSpeed];
+  const startMs = Math.round(maxMs * 1.4);
+  const ramp    = 25;
+  return Math.round(startMs - (startMs - maxMs) * Math.min(score, ramp) / ramp);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Entrada: teclado
+// ═══════════════════════════════════════════════════════════════
+btnPlay.addEventListener('click', startGame);
+
+const DIR_MAP = {
+  ArrowUp:    {x:0, y:-1}, ArrowDown:  {x:0, y:1},
+  ArrowLeft:  {x:-1, y:0}, ArrowRight: {x:1, y:0},
+  w:{x:0,y:-1}, s:{x:0,y:1}, a:{x:-1,y:0}, d:{x:1,y:0},
+  W:{x:0,y:-1}, S:{x:0,y:1}, A:{x:-1,y:0}, D:{x:1,y:0},
+};
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && started && !waitingFirstInput) {
+    paused = !paused;
+    paused ? drawPaused() : draw();
+    return;
+  }
+  if (e.key === 'Enter' && !started) { startGame(); return; }
+
+  const nd = DIR_MAP[e.key];
+  if (!nd) return;
+  if (e.key.startsWith('Arrow')) e.preventDefault();
+
+  // Primeira entrada inicia o movimento
+  if (waitingFirstInput) { beginMoving(nd); return; }
+  if (!started || paused) return;
+  if (nd.x !== -dir.x || nd.y !== -dir.y) nextDir = nd;
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  Entrada: toque (mobile)
+// ═══════════════════════════════════════════════════════════════
+let touchPt = null;
+canvas.addEventListener('touchstart', e => {
+  touchPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  e.preventDefault();
+}, { passive: false });
+canvas.addEventListener('touchend', e => {
+  if (!touchPt) return;
+  const dx = e.changedTouches[0].clientX - touchPt.x;
+  const dy = e.changedTouches[0].clientY - touchPt.y;
+  touchPt = null;
+  if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+  const nd = Math.abs(dx) > Math.abs(dy)
+    ? (dx > 0 ? {x:1,y:0} : {x:-1,y:0})
+    : (dy > 0 ? {x:0,y:1} : {x:0,y:-1});
+  if (waitingFirstInput) { beginMoving(nd); e.preventDefault(); return; }
+  if (!started || paused) return;
+  if (nd.x !== -dir.x || nd.y !== -dir.y) nextDir = nd;
+  e.preventDefault();
+}, { passive: false });
+
+// ═══════════════════════════════════════════════════════════════
+//  Entrada: D-pad (mobile)
+// ═══════════════════════════════════════════════════════════════
+const DPAD_DIR = { up:{x:0,y:-1}, down:{x:0,y:1}, left:{x:-1,y:0}, right:{x:1,y:0} };
+
+document.querySelectorAll('.dpad-btn').forEach(btn => {
+  const handleDpad = (nd) => {
+    if (!nd || !started) return;
+    if (waitingFirstInput) { beginMoving(nd); return; }
+    if (paused) return;
+    if (nd.x !== -dir.x || nd.y !== -dir.y) nextDir = nd;
+  };
+  btn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    handleDpad(DPAD_DIR[btn.dataset.dir]);
+  }, { passive: false });
+  btn.addEventListener('click', () => handleDpad(DPAD_DIR[btn.dataset.dir]));
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  Contas salvas no dispositivo
+// ═══════════════════════════════════════════════════════════════
+const STORAGE_ACCOUNTS = 'snake_accounts';
+const MAX_SAVED = 6;
+
+function getSavedAccounts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_ACCOUNTS)) || []; } catch(e) { return []; }
+}
+
+function saveAccountLocally(user) {
+  // Move para o topo se já existir, senão adiciona
+  const list = getSavedAccounts().filter(a => a.username !== user.username);
+  list.unshift({ username: user.username, name: user.name });
+  localStorage.setItem(STORAGE_ACCOUNTS, JSON.stringify(list.slice(0, MAX_SAVED)));
+  renderSavedChips();
+}
+
+function removeAccountLocally(username) {
+  const list = getSavedAccounts().filter(a => a.username !== username);
+  localStorage.setItem(STORAGE_ACCOUNTS, JSON.stringify(list));
+  renderSavedChips();
+}
+
+function renderSavedChips() {
+  const accounts = getSavedAccounts();
+  const section  = document.getElementById('saved-accounts-section');
+  const container = document.getElementById('saved-chips');
+
+  if (!accounts.length) { section.style.display = 'none'; return; }
+
+  section.style.display = 'flex';
+  container.innerHTML = accounts.map(a => `
+    <div class="account-chip" data-username="${escHtml(a.username)}" data-name="${escHtml(a.name)}">
+      <span class="chip-name">${escHtml(a.name)}</span>
+      <span class="chip-user">@${escHtml(a.username)}</span>
+      <button class="chip-del" data-del="${escHtml(a.username)}" title="Remover">&times;</button>
+    </div>`).join('');
+
+  // Clique no chip → login direto
+  container.querySelectorAll('.account-chip').forEach(chip => {
+    chip.addEventListener('click', e => {
+      if (e.target.closest('.chip-del')) return;
+      document.getElementById('inp-login-user').value = chip.dataset.username;
+      doLogin();
+    });
+  });
+
+  // Botão × → remove da lista local
+  container.querySelectorAll('.chip-del').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      removeAccountLocally(btn.dataset.del);
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Perfil do jogador
+// ═══════════════════════════════════════════════════════════════
+const STORAGE_USER = 'snake_user';
+let playerUser = null;   // { username, name }
+
+function showPlayerInfo() {
+  const el = document.getElementById('player-info');
+  if (playerUser?.username) {
+    document.getElementById('player-label').textContent = `@${playerUser.username}`;
+    el.style.display = 'flex';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function openUserModal(title = 'Bem-vindo!') {
+  document.getElementById('modal-user-title').textContent = title;
+  document.getElementById('modal-user').classList.remove('hidden');
+  switchProfileTab('login');
+  renderSavedChips();   // atualiza chips toda vez que o modal abre
+}
+
+function loadPlayer() {
+  try { playerUser = JSON.parse(localStorage.getItem(STORAGE_USER)); } catch(e) {}
+  if (!playerUser?.username) {
+    openUserModal();
+  } else {
+    showPlayerInfo();
+  }
+}
+
+// ── Trocar conta ──
+document.getElementById('btn-trocar-conta').addEventListener('click', () => {
+  openUserModal('Trocar conta');
+});
+
+// ── Alternância de abas ──
+function switchProfileTab(mode) {
+  document.querySelectorAll('.profile-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.mode === mode)
+  );
+  document.getElementById('mode-login').style.display  = mode === 'login'  ? 'flex' : 'none';
+  document.getElementById('mode-create').style.display = mode === 'create' ? 'flex' : 'none';
+  // limpa erros ao trocar
+  ['login-err','profile-err','username-taken-err'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.display = 'none'; el.textContent = '';
+  });
+  ['inp-login-user','inp-username','inp-name'].forEach(id =>
+    document.getElementById(id).classList.remove('err')
+  );
+}
+document.querySelectorAll('.profile-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchProfileTab(tab.dataset.mode));
+});
+// Ajusta modo-login para flex-column
+['mode-login','mode-create'].forEach(id => {
+  document.getElementById(id).style.flexDirection = 'column';
+  document.getElementById(id).style.gap = '10px';
+});
+
+// ── Login com username existente ──
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('inp-login-user').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function doLogin() {
+  const el     = document.getElementById('inp-login-user');
+  const errEl  = document.getElementById('login-err');
+  const btnEl  = document.getElementById('btn-login');
+  const username = el.value.trim();
+
+  el.classList.remove('err');
+  errEl.style.display = 'none';
+
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+    errEl.textContent = 'Username inválido';
+    errEl.style.display = 'block';
+    el.classList.add('err');
+    return;
+  }
+
+  btnEl.textContent = 'Verificando...';
+  btnEl.disabled = true;
+
+  try {
+    const res  = await fetch(`${API_URL}?action=lookup&username=${encodeURIComponent(username)}`);
+    const data = await res.json();
+
+    if (data.found) {
+      playerUser = { username, name: data.name };
+      localStorage.setItem(STORAGE_USER, JSON.stringify(playerUser));
+      saveAccountLocally(playerUser);
+      document.getElementById('modal-user').classList.add('hidden');
+      showPlayerInfo();
+    } else {
+      errEl.textContent = 'Username não encontrado. Crie um perfil novo.';
+      errEl.style.display = 'block';
+      el.classList.add('err');
+    }
+  } catch(e) {
+    errEl.textContent = 'Erro ao conectar ao servidor.';
+    errEl.style.display = 'block';
+  }
+
+  btnEl.textContent = 'Entrar';
+  btnEl.disabled = false;
+}
+
+// ── Criar novo perfil ──
+document.getElementById('btn-save-profile').addEventListener('click', doCreateProfile);
+['inp-username','inp-name'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') doCreateProfile();
+  });
+});
+
+// Verifica username em tempo real ao sair do campo
+document.getElementById('inp-username').addEventListener('blur', async function() {
+  const username = this.value.trim();
+  const takenEl  = document.getElementById('username-taken-err');
+  takenEl.style.display = 'none';
+  this.classList.remove('err');
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) return;
+
+  try {
+    const res  = await fetch(`${API_URL}?action=check&username=${encodeURIComponent(username)}`);
+    const data = await res.json();
+    if (data.taken) {
+      takenEl.textContent   = 'Username já em uso — escolha outro';
+      takenEl.style.display = 'block';
+      this.classList.add('err');
+    }
+  } catch(e) { /* silencioso */ }
+});
+
+async function doCreateProfile() {
+  const usernameEl = document.getElementById('inp-username');
+  const nameEl     = document.getElementById('inp-name');
+  const errEl      = document.getElementById('profile-err');
+  const takenEl    = document.getElementById('username-taken-err');
+  const btnEl      = document.getElementById('btn-save-profile');
+  const username   = usernameEl.value.trim();
+  const name       = nameEl.value.trim();
+
+  [usernameEl, nameEl].forEach(el => el.classList.remove('err'));
+  [errEl, takenEl].forEach(el => { el.style.display = 'none'; el.textContent = ''; });
+
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+    errEl.textContent   = 'Username inválido: use 3–20 letras, números ou _';
+    errEl.style.display = 'block';
+    usernameEl.classList.add('err');
+    usernameEl.focus();
+    return;
+  }
+  if (name.length < 2) {
+    errEl.textContent   = 'Informe um nome com pelo menos 2 caracteres';
+    errEl.style.display = 'block';
+    nameEl.classList.add('err');
+    nameEl.focus();
+    return;
+  }
+
+  // Verifica disponibilidade antes de criar
+  btnEl.textContent = 'Verificando...';
+  btnEl.disabled = true;
+
+  try {
+    const res  = await fetch(`${API_URL}?action=check&username=${encodeURIComponent(username)}`);
+    const data = await res.json();
+    if (data.taken) {
+      takenEl.textContent   = 'Username já em uso — escolha outro';
+      takenEl.style.display = 'block';
+      usernameEl.classList.add('err');
+      usernameEl.focus();
+      btnEl.textContent = 'Criar perfil';
+      btnEl.disabled = false;
+      return;
+    }
+  } catch(e) { /* continua mesmo sem verificação */ }
+
+  playerUser = { username, name };
+  localStorage.setItem(STORAGE_USER, JSON.stringify(playerUser));
+  saveAccountLocally(playerUser);
+  document.getElementById('modal-user').classList.add('hidden');
+  showPlayerInfo();
+
+  btnEl.textContent = 'Criar perfil';
+  btnEl.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  API — envio de score e leitura de ranking
+// ═══════════════════════════════════════════════════════════════
+const API_URL = 'api.php';
+
+async function submitScore(map, score) {
+  if (!playerUser || score <= 0) return null;
+  try {
+    const res  = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: playerUser.username, name: playerUser.name, map, score }),
+    });
+    return await res.json();
+  } catch(e) { return null; }   // jogo funciona sem servidor
+}
+
+async function fetchRanking(map) {
+  try {
+    const res = await fetch(`${API_URL}?map=${map}`);
+    return await res.json();
+  } catch(e) { return null; }
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Modal de ranking
+// ═══════════════════════════════════════════════════════════════
+let rankMapIdx = 0;
+
+function renderRankTable(data) {
+  const contentEl = document.getElementById('rank-content');
+  if (!data) {
+    contentEl.innerHTML = '<p class="rank-server-err">Erro ao conectar. Verifique o servidor PHP.</p>';
+    return;
+  }
+  if (!data.length) {
+    contentEl.innerHTML = '<p class="rank-empty">Nenhum recorde ainda — seja o primeiro!</p>';
+    return;
+  }
+
+  const rows = data.map((e, i) => {
+    const isMine = playerUser && e.username === playerUser.username;
+    const pos    = i === 0 ? '#1' : i === 1 ? '#2' : i === 2 ? '#3' : `${i+1}`;
+    const cls    = isMine ? 'rank-mine' : (i < 3 ? `rank-pos-${i+1}` : '');
+    return `<tr class="${cls}">
+      <td class="col-pos">${pos}</td>
+      <td title="${escHtml(e.username)}">${escHtml(e.name)}</td>
+      <td style="color:#383858;font-size:0.7rem">@${escHtml(e.username)}</td>
+      <td class="col-score">${e.score}</td>
+      <td class="col-date">${escHtml(e.date || '')}</td>
+    </tr>`;
+  }).join('');
+
+  contentEl.innerHTML = `
+    <table class="rank-table">
+      <thead><tr>
+        <th class="col-pos">#</th>
+        <th>Nome</th>
+        <th>@user</th>
+        <th style="text-align:right">Pts</th>
+        <th style="text-align:right">Data</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function openRanking(mapIdx) {
+  rankMapIdx = mapIdx;
+  const modal = document.getElementById('modal-rank');
+  document.getElementById('rank-map-label').textContent =
+    `${mapIdx + 1}. ${MAP_DEFS[mapIdx].name}`;
+  document.getElementById('rank-content').innerHTML =
+    '<p class="rank-loading-msg">Carregando...</p>';
+  modal.classList.remove('hidden');
+  renderRankTable(await fetchRanking(mapIdx));
+}
+
+document.getElementById('btn-show-rank').addEventListener('click', () => openRanking(selMap));
+document.getElementById('btn-close-rank').addEventListener('click', () => {
+  document.getElementById('modal-rank').classList.add('hidden');
+});
+document.getElementById('btn-rank-prev').addEventListener('click', () => {
+  openRanking((rankMapIdx - 1 + MAP_DEFS.length) % MAP_DEFS.length);
+});
+document.getElementById('btn-rank-next').addEventListener('click', () => {
+  openRanking((rankMapIdx + 1) % MAP_DEFS.length);
+});
+
+// Fechar ranking com ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !document.getElementById('modal-rank').classList.contains('hidden')) {
+    document.getElementById('modal-rank').classList.add('hidden');
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  Render inicial
+// ═══════════════════════════════════════════════════════════════
+if (window.matchMedia('(pointer: coarse)').matches) {
+  document.getElementById('ov-ctrl').textContent = 'Deslize na tela ou use o direcional abaixo';
+}
+
+loadPlayer();
+hsEl.textContent = getHS(selMap);
+showPlayerInfo();
+previewMap();
+</script>
+
+</body>
+</html>

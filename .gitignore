@@ -1,0 +1,7 @@
+# Dados de runtime — não sobem para o repositório
+*/rooms/*.json
+snake/records.json
+
+# Arquivos de desenvolvimento local
+tarefas-md/
+AGENTS.md

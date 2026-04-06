@@ -1,0 +1,6 @@
+{
+  "name": "Cobrinha",
+  "description": "O clássico jogo da cobrinha com 10 mapas, 3 velocidades e ranking global.",
+  "icon": "snake",
+  "color": "#4ade80"
+}
