@@ -23,7 +23,7 @@ $backLabel = 'Lobby';
     :root{--c:#a855f7}
 
     /* ── LAYOUT ── */
-    .game-wrap{display:flex;gap:16px;padding:20px 16px;max-width:1000px;margin:0 auto;align-items:flex-start}
+    .game-wrap{display:flex;gap:16px;padding:20px 16px;max-width:900px;margin:0 auto;align-items:flex-start}
     .board-area{flex:0 0 auto;display:flex;justify-content:center;align-items:center}
     .sidebar{flex:1;min-width:200px;max-width:260px;display:flex;flex-direction:column;gap:12px}
 
