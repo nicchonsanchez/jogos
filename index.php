@@ -83,14 +83,15 @@ function esc(string $s): string {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="shared/bauhaus.css">
+  <script src="shared/player.js"></script>
   <style>
     :root {
       --verde:   rgb(13, 226, 138);
-      --bg:      #08080f;
-      --surface: #0d0d1a;
-      --border:  #1a1a2c;
-      --muted:   #55556e;
-      --dim:     #252542;
+      --bg:      #060712;
+      --surface: #0b0d1e;
+      --border:  #181b30;
+      --muted:   #5a5e7a;
+      --dim:     #2e3255;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -104,8 +105,9 @@ function esc(string $s): string {
 
     /* ── Header ── */
     header {
-      padding: 32px 32px 28px;
+      padding: 20px 32px;
       border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(16,18,50,.5) 0%, transparent 100%);
     }
     .header-inner {
       max-width: 900px;
@@ -117,12 +119,11 @@ function esc(string $s): string {
       flex-wrap: wrap;
     }
     .site-back {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #3498db;
+      color: var(--dim);
       text-decoration: none;
-      font-weight: 600;
       transition: color 0.2s;
     }
     .site-back:hover { color: var(--verde); }
@@ -130,7 +131,7 @@ function esc(string $s): string {
     .header-brand {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
     }
     h1,
     h1 * {
@@ -174,24 +175,25 @@ function esc(string $s): string {
       }
     }
     .subtitle {
-      color: #9ca3af;
-      font-size: 0.75rem;
-      letter-spacing: 0.5px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      padding-left: 2px;
     }
 
     /* ── Main ── */
     main {
       max-width: 900px;
       margin: 0 auto;
-      padding: 40px 32px 60px;
+      padding: 36px 32px 60px;
     }
 
     .section-label {
-      font-size: 0.65rem;
-      letter-spacing: 2px;
+      font-size: 0.6rem;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
       color: var(--dim);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .games-grid {
@@ -299,6 +301,26 @@ function esc(string $s): string {
     }
     footer a:hover { color: var(--verde); }
 
+    /* ── Player badge / botão login ── */
+    .player-area { display: flex; align-items: center; gap: 10px; }
+    .player-badge {
+      display: none;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+      cursor: pointer;
+    }
+    .player-badge:hover .badge-name { color: #aaa; }
+    .badge-name { font-size: .78rem; color: #ccc; transition: color .15s; }
+    .badge-sub  { font-size: .6rem; letter-spacing: 1px; color: var(--dim); }
+    .btn-login {
+      font-size: .68rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--dim); background: none; border: 1px solid #1a1a2c;
+      border-radius: 5px; padding: 6px 14px; cursor: pointer;
+      font-family: inherit; transition: border-color .15s, color .15s;
+    }
+    .btn-login:hover { border-color: var(--verde); color: var(--verde); }
+
     /* ── Responsivo ── */
     @media (max-width: 500px) {
       header { padding: 24px 20px 20px; }
@@ -316,7 +338,14 @@ function esc(string $s): string {
       <h1>Nicch<span class="bg-titulo"><span class="degrade-on">on</span></span></h1>
       <span class="subtitle">/ jogos</span>
     </div>
-    <a class="site-back" href="https://nicchon.com">← nicchon.com</a>
+    <div class="player-area">
+      <div class="player-badge" id="player-badge" onclick="PlayerLogin.showSwitch('rgb(13,226,138)', p => { player=p; updateBadge(); })">
+        <span class="badge-name" id="badge-name"></span>
+        <span class="badge-sub">trocar conta</span>
+      </div>
+      <button class="btn-login" id="btn-login" onclick="doLogin()">Entrar</button>
+      <a class="site-back" href="https://nicchon.com">← nicchon.com</a>
+    </div>
   </div>
 </header>
 
@@ -350,5 +379,41 @@ function esc(string $s): string {
   <a href="https://nicchon.com">nicchon.com</a> &nbsp;/&nbsp; jogos
 </footer>
 
+<script>
+let player = PlayerLogin.getPlayer();
+
+function updateBadge() {
+  const badge  = document.getElementById('player-badge');
+  const btnLog = document.getElementById('btn-login');
+  if (player?.username) {
+    document.getElementById('badge-name').textContent = player.name + '  @' + player.username;
+    badge.style.display  = 'flex';
+    btnLog.style.display = 'none';
+  } else {
+    badge.style.display  = 'none';
+    btnLog.style.display = 'inline-block';
+  }
+}
+
+function doLogin() {
+  PlayerLogin.showSwitch('rgb(13,226,138)', p => { player = p; updateBadge(); });
+}
+
+updateBadge();
+
+// Intercepta clique nos cards: exige login antes de navegar
+document.querySelectorAll('.game-card').forEach(card => {
+  card.addEventListener('click', e => {
+    if (player?.username) return; // já logado → navegação normal
+    e.preventDefault();
+    const href = card.getAttribute('href');
+    PlayerLogin.showSwitch('rgb(13,226,138)', p => {
+      player = p;
+      updateBadge();
+      location.href = href;
+    });
+  });
+});
+</script>
 </body>
 </html>

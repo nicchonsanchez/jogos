@@ -86,22 +86,22 @@
       <style>
         #player-login-modal {
           position: fixed; inset: 0; z-index: 9999;
-          background: rgba(8,8,15,.88); backdrop-filter: blur(4px);
+          background: rgba(6,7,18,.92); backdrop-filter: blur(4px);
           display: flex; align-items: center; justify-content: center;
           padding: 16px;
         }
         #player-login-modal .plm-box {
-          background: #0d0d1a; border: 1px solid #1a1a2c; border-radius: 12px;
+          background: #0b0d1e; border: 1px solid #181b30; border-radius: 12px;
           padding: 24px; width: 100%; max-width: 360px;
           font-family: 'Open Sans','Segoe UI', sans-serif; color: #fff;
         }
         #player-login-modal .plm-title {
           font-size: .6rem; letter-spacing: 2px; text-transform: uppercase;
-          color: #252542; margin-bottom: 16px;
+          color: #2e3255; margin-bottom: 16px;
         }
         #player-login-modal .plm-tabs {
           display: flex; gap: 0; margin-bottom: 16px;
-          border-bottom: 1px solid #1a1a2c;
+          border-bottom: 1px solid #181b30;
         }
         #player-login-modal .plm-tab {
           padding: 7px 16px; font-size: .78rem; cursor: pointer;
@@ -120,7 +120,7 @@
         }
         #player-login-modal .plm-chip {
           padding: 5px 12px; border-radius: 20px; font-size: .78rem;
-          background: #08080f; border: 1px solid #1e1e30;
+          background: #060712; border: 1px solid #1c2035;
           color: #888; cursor: pointer; transition: all .12s;
           font-family: inherit;
         }
@@ -128,13 +128,13 @@
           border-color: ${c}55; color: ${c};
         }
         #player-login-modal .plm-loading {
-          font-size: .72rem; color: #252542;
+          font-size: .72rem; color: #2e3255;
         }
         #player-login-modal .plm-empty {
-          font-size: .72rem; color: #252542;
+          font-size: .72rem; color: #2e3255;
         }
         #player-login-modal input {
-          background: #08080f; border: 1px solid #1e1e30; border-radius: 5px;
+          background: #060712; border: 1px solid #1c2035; border-radius: 5px;
           color: #ddd; font-family: inherit; font-size: .88rem;
           padding: 8px 10px; outline: none; width: 100%;
           transition: border-color .15s;

@@ -11,7 +11,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #08080f;
+      background: #060712;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -47,8 +47,8 @@
       display: flex;
       flex-direction: column;
       gap: 7px;
-      background: #0d0d1a;
-      border: 1px solid #1a1a2c;
+      background: #0b0d1e;
+      border: 1px solid #181b30;
       border-radius: 8px;
       padding: 10px 14px;
     }
@@ -67,7 +67,7 @@
       padding: 4px 11px;
       background: transparent;
       color: #555;
-      border: 1px solid #1e1e30;
+      border: 1px solid #1c2035;
       border-radius: 4px;
       font-size: 0.76rem;
       cursor: pointer;
@@ -91,7 +91,7 @@
     }
     .map-desc {
       font-size: 0.7rem;
-      color: #252542;
+      color: #2e3255;
       padding-left: 86px;
       min-height: 14px;
       transition: color 0.15s;
@@ -151,8 +151,8 @@
     .modal.hidden { display: none; }
 
     .modal-box {
-      background: #0d0d1a;
-      border: 1px solid #252542;
+      background: #0b0d1e;
+      border: 1px solid #2e3255;
       border-radius: 12px;
       padding: 28px 28px 24px;
       width: min(380px, 100%);
@@ -175,7 +175,7 @@
     .modal-input {
       width: 100%;
       background: #0a0a16;
-      border: 1px solid #1e1e30;
+      border: 1px solid #1c2035;
       border-radius: 5px;
       color: #ddd;
       font-family: inherit;
@@ -199,7 +199,7 @@
     .rank-nav { display: flex; align-items: center; gap: 6px; }
     .rank-nav-btn {
       background: transparent;
-      border: 1px solid #1e1e30;
+      border: 1px solid #1c2035;
       border-radius: 4px;
       color: #555;
       width: 26px; height: 26px;
@@ -352,7 +352,7 @@
     #btn-trocar-conta {
       background: none;
       border: none;
-      color: #252542;
+      color: #2e3255;
       font-size: 0.65rem;
       cursor: pointer;
       font-family: inherit;
@@ -379,8 +379,8 @@
       gap: 6px;
     }
     .dpad-btn {
-      background: #0d0d1a;
-      border: 1px solid #1a1a2c;
+      background: #0b0d1e;
+      border: 1px solid #181b30;
       border-radius: 10px;
       color: #4ade80;
       font-size: 1.3rem;
@@ -433,7 +433,7 @@
 </head>
 <body>
 
-<a href="../" style="position:fixed;top:14px;left:16px;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#252542;text-decoration:none;transition:color .15s;z-index:10" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#252542'">← Jogos</a>
+<a href="../" style="position:fixed;top:14px;left:16px;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#2e3255;text-decoration:none;transition:color .15s;z-index:10" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#2e3255'">← Jogos</a>
 
 <h1>COBRINHA</h1>
 
@@ -506,7 +506,7 @@
       <div id="saved-accounts-section" style="display:none;flex-direction:column;gap:6px">
         <span class="saved-label">Contas salvas neste dispositivo</span>
         <div class="saved-chips" id="saved-chips"></div>
-        <div style="height:1px;background:#111120;margin:2px 0"></div>
+        <div style="height:1px;background:#101328;margin:2px 0"></div>
       </div>
 
       <div class="modal-field">
@@ -816,7 +816,7 @@ MAP_DEFS.forEach((m, i) => {
 function updateDesc() {
   const m = MAP_DEFS[selMap];
   mapDescEl.textContent = `${m.name} — ${m.desc}`;
-  mapDescEl.style.color = '#252542';
+  mapDescEl.style.color = '#2e3255';
 }
 updateDesc();
 
