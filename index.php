@@ -79,26 +79,36 @@ function esc(string $s): string {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jogos — Nicchon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --verde:   rgb(13, 226, 138);
+      --azul-bg: #0d013a;
+      --azul-card: #100146;
+      --azul-borda: #1a0560;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #080812;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
+      background: var(--azul-bg);
+      color: #9ca3af;
+      font-family: 'Open Sans', 'Segoe UI', sans-serif;
       min-height: 100vh;
     }
 
     /* ── Header ── */
     header {
-      padding: 40px 32px 32px;
-      border-bottom: 1px solid #111128;
+      padding: 32px 32px 28px;
+      border-bottom: 1px solid var(--azul-borda);
     }
     .header-inner {
       max-width: 900px;
       margin: 0 auto;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
@@ -107,32 +117,37 @@ function esc(string $s): string {
       font-size: 0.72rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #333;
+      color: #3498db;
       text-decoration: none;
-      transition: color 0.15s;
+      font-weight: 600;
+      transition: color 0.2s;
     }
-    .site-back:hover { color: #888; }
-    .site-back span { margin-right: 6px; }
+    .site-back:hover { color: var(--verde); }
 
+    .header-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
     h1 {
       font-size: 2rem;
       letter-spacing: 4px;
       color: #fff;
-      margin-top: 12px;
+      font-weight: 300;
+      font-family: 'Open Sans', sans-serif;
     }
-    h1 em {
-      color: #4ade80;
-      font-style: normal;
-      text-shadow: 0 0 24px #4ade8044;
+    h1 strong {
+      color: var(--verde);
+      font-weight: 700;
+      text-shadow: 0 0 24px rgba(13,226,138,.3);
     }
     .subtitle {
-      color: #333;
-      font-size: 0.78rem;
-      letter-spacing: 1px;
-      margin-top: 6px;
+      color: #9ca3af;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
     }
 
-    /* ── Grid de jogos ── */
+    /* ── Main ── */
     main {
       max-width: 900px;
       margin: 0 auto;
@@ -143,7 +158,7 @@ function esc(string $s): string {
       font-size: 0.65rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: #2a2a48;
+      color: #2a1a6e;
       margin-bottom: 20px;
     }
 
@@ -155,26 +170,25 @@ function esc(string $s): string {
 
     /* ── Card ── */
     .game-card {
-      background: #0e0e1e;
-      border: 1px solid #181830;
+      background: var(--azul-card);
+      border: 1px solid var(--azul-borda);
       border-radius: 12px;
       overflow: hidden;
       text-decoration: none;
       display: flex;
       flex-direction: column;
       transition: border-color 0.18s, transform 0.15s, box-shadow 0.18s;
-      position: relative;
     }
     .game-card:hover {
-      border-color: var(--c);
+      border-color: var(--c, var(--verde));
       transform: translateY(-3px);
-      box-shadow: 0 8px 32px color-mix(in srgb, var(--c) 12%, transparent);
+      box-shadow: 0 8px 32px color-mix(in srgb, var(--c, var(--verde)) 15%, transparent);
     }
 
     .card-accent {
       height: 3px;
-      background: var(--c);
-      opacity: 0.7;
+      background: var(--c, var(--verde));
+      opacity: 0.8;
     }
 
     .card-body {
@@ -188,52 +202,49 @@ function esc(string $s): string {
     .card-icon {
       width: 40px;
       height: 40px;
-      color: var(--c);
+      color: var(--c, var(--verde));
     }
 
     .card-name {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 600;
-      color: #e8e8f0;
+      color: #fff;
       letter-spacing: 0.5px;
     }
 
     .card-desc {
       font-size: 0.78rem;
-      color: #444;
+      color: #6b7280;
       line-height: 1.5;
       flex: 1;
     }
 
     .card-footer {
       padding: 12px 20px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
 
     .play-btn {
+      display: inline-block;
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: var(--c);
-      background: color-mix(in srgb, var(--c) 10%, transparent);
-      border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+      color: var(--c, var(--verde));
+      background: color-mix(in srgb, var(--c, var(--verde)) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--c, var(--verde)) 35%, transparent);
       border-radius: 5px;
       padding: 6px 16px;
-      cursor: pointer;
       text-decoration: none;
-      transition: background 0.12s, border-color 0.12s;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
     }
-    .play-btn:hover {
-      background: color-mix(in srgb, var(--c) 20%, transparent);
-      border-color: color-mix(in srgb, var(--c) 60%, transparent);
+    .game-card:hover .play-btn {
+      background: color-mix(in srgb, var(--c, var(--verde)) 20%, transparent);
+      border-color: color-mix(in srgb, var(--c, var(--verde)) 70%, transparent);
     }
 
     /* ── Vazio ── */
     .no-games {
-      color: #2a2a48;
+      color: #2a1a6e;
       font-size: 0.88rem;
       padding: 48px 0;
       text-align: center;
@@ -241,17 +252,24 @@ function esc(string $s): string {
 
     /* ── Footer ── */
     footer {
-      border-top: 1px solid #111128;
+      border-top: 1px solid var(--azul-borda);
       text-align: center;
       padding: 20px;
       font-size: 0.65rem;
-      letter-spacing: 1px;
-      color: #1e1e38;
+      letter-spacing: 1.5px;
+      color: #2a1a6e;
     }
+    footer a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    footer a:hover { color: var(--verde); }
 
     /* ── Responsivo ── */
     @media (max-width: 500px) {
-      header { padding: 28px 20px 24px; }
+      header { padding: 24px 20px 20px; }
       main   { padding: 28px 20px 48px; }
       h1     { font-size: 1.5rem; }
       .games-grid { grid-template-columns: 1fr; }
@@ -262,15 +280,11 @@ function esc(string $s): string {
 
 <header>
   <div class="header-inner">
-    <div>
-      <a class="site-back" href="https://nicchon.com">
-        <span>&#8592;</span> nicchon.com
-      </a>
-      <h1>JOGOS <em>//</em></h1>
-      <p class="subtitle">
-        <?= count($games) ?> jogo<?= count($games) !== 1 ? 's' : '' ?> disponível<?= count($games) !== 1 ? 'is' : '' ?>
-      </p>
+    <div class="header-brand">
+      <h1>NICCH<strong>ON</strong></h1>
+      <span class="subtitle">/ jogos</span>
     </div>
+    <a class="site-back" href="https://nicchon.com">← nicchon.com</a>
   </div>
 </header>
 
@@ -300,7 +314,9 @@ function esc(string $s): string {
   <?php endif; ?>
 </main>
 
-<footer>NICCHON.COM &nbsp;/&nbsp; JOGOS</footer>
+<footer>
+  <a href="https://nicchon.com">nicchon.com</a> &nbsp;/&nbsp; jogos
+</footer>
 
 </body>
 </html>
