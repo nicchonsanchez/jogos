@@ -501,7 +501,7 @@ function esc($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
 <p class="hints">ESC — pausar &nbsp;&nbsp;|&nbsp;&nbsp; Enter — reiniciar</p>
 
 <!-- ── Modal: perfil (login / criar) ── -->
-<div id="modal-user" class="modal">
+<div id="modal-user" class="modal hidden">
   <div class="modal-box">
     <h2 id="modal-user-title">Bem-vindo!</h2>
 
