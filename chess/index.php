@@ -29,10 +29,10 @@ function timeAgo(int $ts): string {
   <title>Xadrez — Nicchon</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#080812;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+    body{background:#08080f;color:#fff;font-family:'Open Sans','Segoe UI',sans-serif;min-height:100vh}
     :root{--c:#f59e0b}
 
-    header{padding:32px 24px 24px;border-bottom:1px solid #111128}
+    header{padding:32px 24px 24px;border-bottom:1px solid #111120}
     .header-inner{max-width:760px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
     .back{font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:#333;text-decoration:none;transition:color .15s}
     .back:hover{color:#888}
@@ -42,46 +42,46 @@ function timeAgo(int $ts): string {
 
     main{max-width:760px;margin:0 auto;padding:32px 24px 60px;display:flex;flex-direction:column;gap:32px}
 
-    .section-title{font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:#2a2a48;margin-bottom:14px}
+    .section-title{font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:#252542;margin-bottom:14px}
 
     /* ── Modos ── */
     .mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .mode-card{background:#0e0e1e;border:1px solid #181830;border-radius:10px;padding:20px;cursor:pointer;transition:border-color .15s,transform .12s;text-align:left}
+    .mode-card{background:#0d0d1a;border:1px solid #1a1a2c;border-radius:10px;padding:20px;cursor:pointer;transition:border-color .15s,transform .12s;text-align:left}
     .mode-card:hover{border-color:var(--c);transform:translateY(-2px)}
     .mode-card h3{font-size:1rem;color:#e8e8f0;margin-bottom:6px}
     .mode-card p{font-size:.75rem;color:#444;line-height:1.4}
     .mode-icon{font-size:1.6rem;margin-bottom:10px}
 
     /* ── Formulário criar sala ── */
-    .form-box{background:#0e0e1e;border:1px solid #181830;border-radius:10px;padding:20px;display:none;flex-direction:column;gap:12px}
+    .form-box{background:#0d0d1a;border:1px solid #1a1a2c;border-radius:10px;padding:20px;display:none;flex-direction:column;gap:12px}
     .form-box.open{display:flex}
     .form-row{display:flex;flex-direction:column;gap:5px}
     label{font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;color:#444}
-    input,select{background:#080812;border:1px solid #1e1e38;border-radius:5px;color:#ddd;font-family:inherit;font-size:.88rem;padding:8px 10px;outline:none;transition:border-color .15s;width:100%}
+    input,select{background:#08080f;border:1px solid #1e1e30;border-radius:5px;color:#ddd;font-family:inherit;font-size:.88rem;padding:8px 10px;outline:none;transition:border-color .15s;width:100%}
     input:focus,select:focus{border-color:#f59e0b55}
     .color-row{display:flex;gap:8px}
-    .color-opt{flex:1;padding:7px;background:#080812;border:1px solid #1e1e38;border-radius:5px;color:#555;font-size:.78rem;cursor:pointer;text-align:center;transition:all .12s;font-family:inherit}
+    .color-opt{flex:1;padding:7px;background:#08080f;border:1px solid #1e1e30;border-radius:5px;color:#555;font-size:.78rem;cursor:pointer;text-align:center;transition:all .12s;font-family:inherit}
     .color-opt.active{border-color:#f59e0b55;color:#f59e0b;background:#f59e0b11}
 
     /* ── Botões ── */
     .btn{padding:9px 24px;border:none;border-radius:5px;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .12s}
-    .btn-primary{background:var(--c);color:#080812}
+    .btn-primary{background:var(--c);color:#08080f}
     .btn-primary:hover{filter:brightness(1.1)}
-    .btn-ghost{background:transparent;border:1px solid #1e1e38;color:#555}
+    .btn-ghost{background:transparent;border:1px solid #1e1e30;color:#555}
     .btn-ghost:hover{border-color:#444;color:#aaa}
     .btn-sm{padding:5px 14px;font-size:.75rem}
 
     /* ── Dificuldade bot ── */
     .diff-row{display:flex;gap:8px}
-    .diff-btn{flex:1;padding:7px;background:#080812;border:1px solid #1e1e38;border-radius:5px;color:#555;font-size:.78rem;cursor:pointer;text-align:center;transition:all .12s;font-family:inherit}
+    .diff-btn{flex:1;padding:7px;background:#08080f;border:1px solid #1e1e30;border-radius:5px;color:#555;font-size:.78rem;cursor:pointer;text-align:center;transition:all .12s;font-family:inherit}
     .diff-btn.active{border-color:#f59e0b55;color:#f59e0b;background:#f59e0b11}
 
     /* ── Lista de salas ── */
     .rooms-list{display:flex;flex-direction:column;gap:8px}
-    .room-item{background:#0e0e1e;border:1px solid #181830;border-radius:8px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .room-item{background:#0d0d1a;border:1px solid #1a1a2c;border-radius:8px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
     .room-info h4{font-size:.9rem;color:#ddd;margin-bottom:3px}
     .room-info small{font-size:.7rem;color:#333}
-    .room-empty{color:#2a2a48;font-size:.82rem;padding:24px 0;text-align:center}
+    .room-empty{color:#252542;font-size:.82rem;padding:24px 0;text-align:center}
 
     /* ── Join por código ── */
     .join-row{display:flex;gap:8px}

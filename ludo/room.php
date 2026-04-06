@@ -10,9 +10,9 @@ if (!$roomId) { header('Location: index.php'); exit; }
   <title>Ludo — Nicchon</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#080812;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+    body{background:#08080f;color:#fff;font-family:'Open Sans','Segoe UI',sans-serif;min-height:100vh}
     :root{--c:#a855f7}
-    header{padding:20px 24px;border-bottom:1px solid #111128;display:flex;align-items:center;gap:16px}
+    header{padding:20px 24px;border-bottom:1px solid #111120;display:flex;align-items:center;gap:16px}
     .back{font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:#333;text-decoration:none;transition:color .15s}
     .back:hover{color:#888}
     .header-title{font-size:1.1rem;letter-spacing:2px;color:var(--c);text-shadow:0 0 14px #a855f744}
@@ -31,16 +31,16 @@ if (!$roomId) { header('Location: index.php'); exit; }
     .waiting-code{font-size:3.2rem;letter-spacing:8px;color:var(--c);font-weight:700;text-shadow:0 0 30px #a855f766}
     .waiting-label{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:#333}
     .waiting-slots{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0}
-    .slot-chip{padding:6px 14px;border-radius:20px;font-size:.78rem;border:1px solid #1e1e38;color:#444}
+    .slot-chip{padding:6px 14px;border-radius:20px;font-size:.78rem;border:1px solid #1e1e30;color:#444}
     .slot-chip.filled{border-color:currentColor}
     .slot-chip.red{color:#ef4444;border-color:#ef444444}
     .slot-chip.blue{color:#3b82f6;border-color:#3b82f644}
     .slot-chip.green{color:#22c55e;border-color:#22c55e44}
     .slot-chip.yellow{color:#eab308;border-color:#eab30844}
     #screen-result{gap:16px}
-    .result-box{background:#0e0e1e;border:1px solid #181830;border-radius:12px;padding:28px 40px;max-width:360px;width:100%}
+    .result-box{background:#0d0d1a;border:1px solid #1a1a2c;border-radius:12px;padding:28px 40px;max-width:360px;width:100%}
     .result-title{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:16px}
-    .rank-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #111128}
+    .rank-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #111120}
     .rank-row:last-child{border-bottom:none}
     .rank-num{font-size:1.2rem;font-weight:700;width:28px;color:#444}
     .rank-num.first{color:#fbbf24}
@@ -50,11 +50,11 @@ if (!$roomId) { header('Location: index.php'); exit; }
     .rank-dot{width:14px;height:14px;border-radius:50%}
 
     /* ── SIDEBAR PANELS ── */
-    .panel{background:#0e0e1e;border:1px solid #181830;border-radius:8px;padding:12px 14px}
-    .panel-title{font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:#2a2a48;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:default}
+    .panel{background:#0d0d1a;border:1px solid #1a1a2c;border-radius:8px;padding:12px 14px}
+    .panel-title{font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:#252542;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:default}
     .panel-title.collapsible{cursor:pointer;user-select:none}
     .panel-title.collapsible:hover{color:#555}
-    .panel-toggle{font-size:.7rem;color:#2a2a48;transition:transform .2s}
+    .panel-toggle{font-size:.7rem;color:#252542;transition:transform .2s}
     .panel-toggle.open{transform:rotate(180deg)}
     .panel-body{overflow:hidden;transition:max-height .25s ease}
     .panel-body.collapsed{max-height:0!important}
@@ -74,7 +74,7 @@ if (!$roomId) { header('Location: index.php'); exit; }
     .btn-primary{background:var(--c);color:#fff}
     .btn-primary:hover:not(:disabled){filter:brightness(1.1)}
     .btn:disabled{opacity:.4;cursor:default}
-    .btn-ghost{background:transparent;border:1px solid #1e1e38;color:#555}
+    .btn-ghost{background:transparent;border:1px solid #1e1e30;color:#555}
     .btn-ghost:hover{border-color:#444;color:#aaa}
 
     /* History */
@@ -90,9 +90,9 @@ if (!$roomId) { header('Location: index.php'); exit; }
       width:min(calc(100vw - 300px),540px);
       aspect-ratio:1;
       min-width:280px;
-      border:2px solid #181830;
+      border:2px solid #1a1a2c;
       border-radius:4px;
-      background:#0e0e1e;
+      background:#0d0d1a;
       position:relative;
     }
     .cell{
@@ -100,7 +100,7 @@ if (!$roomId) { header('Location: index.php'); exit; }
       display:flex;
       align-items:center;
       justify-content:center;
-      border:1px solid #111128;
+      border:1px solid #111120;
     }
     /* Base corners */
     .cell.home-red   {background:#ef444418}
@@ -113,7 +113,7 @@ if (!$roomId) { header('Location: index.php'); exit; }
     .cell.home-green.inner {background:#22c55e30}
     .cell.home-yellow.inner{background:#eab30830}
     /* Path cells */
-    .cell.path{background:#13131f}
+    .cell.path{background:#111120}
     /* Colored path (entrance lanes) */
     .cell.path-red   {background:#ef444420}
     .cell.path-blue  {background:#3b82f620}
@@ -164,7 +164,7 @@ if (!$roomId) { header('Location: index.php'); exit; }
     .turn-indicator{height:4px;border-radius:2px;margin-top:6px;transition:background .3s}
 
     /* Notification */
-    .notif{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#0e0e1e;border:1px solid #a855f744;border-radius:8px;padding:10px 20px;font-size:.82rem;color:#ddd;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100;text-align:center}
+    .notif{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#0d0d1a;border:1px solid #a855f744;border-radius:8px;padding:10px 20px;font-size:.82rem;color:#ddd;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100;text-align:center}
     .notif.show{opacity:1}
 
     @media(max-width:700px){
@@ -189,7 +189,7 @@ if (!$roomId) { header('Location: index.php'); exit; }
   <p style="color:#333;font-size:.78rem">Compartilhe este código com seus amigos</p>
   <div id="waiting-slots" class="waiting-slots"></div>
   <div id="waiting-actions" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"></div>
-  <p id="waiting-msg" style="color:#2a2a48;font-size:.72rem"></p>
+  <p id="waiting-msg" style="color:#252542;font-size:.72rem"></p>
 </div>
 
 <!-- Game screen -->

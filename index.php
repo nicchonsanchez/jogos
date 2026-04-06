@@ -86,15 +86,17 @@ function esc(string $s): string {
   <style>
     :root {
       --verde:   rgb(13, 226, 138);
-      --azul-bg: #0d013a;
-      --azul-card: #100146;
-      --azul-borda: #1a0560;
+      --bg:      #08080f;
+      --surface: #0d0d1a;
+      --border:  #1a1a2c;
+      --muted:   #55556e;
+      --dim:     #252542;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: var(--azul-bg);
+      background: var(--bg);
       color: #9ca3af;
       font-family: 'Open Sans', 'Segoe UI', sans-serif;
       min-height: 100vh;
@@ -103,7 +105,7 @@ function esc(string $s): string {
     /* ── Header ── */
     header {
       padding: 32px 32px 28px;
-      border-bottom: 1px solid var(--azul-borda);
+      border-bottom: 1px solid var(--border);
     }
     .header-inner {
       max-width: 900px;
@@ -133,7 +135,7 @@ function esc(string $s): string {
     h1,
     h1 * {
       font-family: 'Bauhaus 93', sans-serif;
-      font-size: 46px;
+      font-size: 2rem;
       font-weight: normal;
       text-transform: uppercase;
       color: white;
@@ -188,7 +190,7 @@ function esc(string $s): string {
       font-size: 0.65rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: #2a1a6e;
+      color: var(--dim);
       margin-bottom: 20px;
     }
 
@@ -200,8 +202,8 @@ function esc(string $s): string {
 
     /* ── Card ── */
     .game-card {
-      background: var(--azul-card);
-      border: 1px solid var(--azul-borda);
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
       text-decoration: none;
@@ -244,7 +246,7 @@ function esc(string $s): string {
 
     .card-desc {
       font-size: 0.78rem;
-      color: #6b7280;
+      color: var(--muted);
       line-height: 1.5;
       flex: 1;
     }
@@ -274,7 +276,7 @@ function esc(string $s): string {
 
     /* ── Vazio ── */
     .no-games {
-      color: #2a1a6e;
+      color: var(--dim);
       font-size: 0.88rem;
       padding: 48px 0;
       text-align: center;
@@ -282,12 +284,12 @@ function esc(string $s): string {
 
     /* ── Footer ── */
     footer {
-      border-top: 1px solid var(--azul-borda);
+      border-top: 1px solid var(--border);
       text-align: center;
       padding: 20px;
       font-size: 0.65rem;
       letter-spacing: 1.5px;
-      color: #2a1a6e;
+      color: var(--dim);
     }
     footer a {
       color: #3498db;

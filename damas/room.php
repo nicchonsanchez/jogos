@@ -13,15 +13,15 @@ function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
   <title>Damas — Partida</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#080812;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px;gap:12px}
+    body{background:#08080f;color:#fff;font-family:'Open Sans','Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px;gap:12px}
     :root{--c:#ef4444}
     a.back{font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:#333;text-decoration:none;align-self:flex-start}
     a.back:hover{color:#888}
     h2{font-size:1.2rem;letter-spacing:2px;color:#ef4444;text-shadow:0 0 20px #ef444444}
     .screen{display:none;flex-direction:column;align-items:center;gap:14px;width:100%}
     .screen.active{display:flex}
-    .room-code{font-size:2.8rem;font-weight:900;letter-spacing:8px;color:#ef4444;text-shadow:0 0 30px #ef444455;background:#0e0e1e;border:1px solid #ef444433;border-radius:10px;padding:16px 32px}
-    .copy-btn{background:transparent;border:1px solid #1e1e38;border-radius:4px;color:#555;font-size:.72rem;padding:5px 14px;cursor:pointer;font-family:inherit;transition:all .12s}
+    .room-code{font-size:2.8rem;font-weight:900;letter-spacing:8px;color:#ef4444;text-shadow:0 0 30px #ef444455;background:#0d0d1a;border:1px solid #ef444433;border-radius:10px;padding:16px 32px}
+    .copy-btn{background:transparent;border:1px solid #1e1e30;border-radius:4px;color:#555;font-size:.72rem;padding:5px 14px;cursor:pointer;font-family:inherit;transition:all .12s}
     .copy-btn:hover{border-color:#ef444444;color:#ef4444}
     .wait-msg{color:#444;font-size:.82rem;animation:blink 1.4s infinite}
     @keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
@@ -48,9 +48,9 @@ function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
 
     /* Sidebar */
     .sidebar{display:flex;flex-direction:column;gap:10px;min-width:180px;max-width:220px}
-    .panel{background:#0e0e1e;border:1px solid #181830;border-radius:8px;padding:12px 14px}
+    .panel{background:#0d0d1a;border:1px solid #1a1a2c;border-radius:8px;padding:12px 14px}
     .panel-title{font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#333;margin-bottom:8px}
-    .player-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #111128}
+    .player-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #111120}
     .player-row:last-child{border-bottom:none}
     .player-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
     .player-dot.white{background:#fff;border:1px solid #555}
@@ -67,7 +67,7 @@ function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
     .btn-primary:hover{filter:brightness(1.1)}
     .status-msg{font-size:.78rem;color:#888;text-align:center;margin-bottom:6px}
 
-    .result-box{background:#0e0e1e;border:1px solid #181830;border-radius:12px;padding:32px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:340px}
+    .result-box{background:#0d0d1a;border:1px solid #1a1a2c;border-radius:12px;padding:32px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:340px}
     .result-title{font-size:1.5rem;font-weight:700;letter-spacing:3px}
     .result-sub{font-size:.82rem;color:#555}
     .result-emoji{font-size:2.5rem}
