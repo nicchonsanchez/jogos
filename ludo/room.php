@@ -1,6 +1,13 @@
 <?php
 $roomId = preg_replace('/[^A-Z0-9]/', '', strtoupper($_GET['id'] ?? ''));
 if (!$roomId) { header('Location: index.php'); exit; }
+function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
+include '../shared/icons.php';
+$accent    = '#a855f7';
+$title     = 'LUDO';
+$subtitle  = 'Clássico de tabuleiro · 2–4 jogadores';
+$backHref  = 'index.php';
+$backLabel = 'Lobby';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -11,16 +18,9 @@ if (!$roomId) { header('Location: index.php'); exit; }
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..700&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ludo — Nicchon</title>
+  <link rel="stylesheet" href="../shared/games.css">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#060712;color:#fff;font-family:'Open Sans','Segoe UI',sans-serif;min-height:100vh}
     :root{--c:#a855f7}
-    header{padding:20px 24px;border-bottom:1px solid #101328;display:flex;align-items:center;gap:16px}
-    .back{font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:#333;text-decoration:none;transition:color .15s}
-    .back:hover{color:#888}
-    .header-title{font-size:1.1rem;letter-spacing:2px;color:var(--c);text-shadow:0 0 14px #a855f744}
-    .room-code{margin-left:auto;font-size:.7rem;letter-spacing:.5px;color:#333}
-    .room-code strong{color:#555;letter-spacing:3px}
 
     /* ── LAYOUT ── */
     .game-wrap{display:flex;gap:16px;padding:20px 16px;max-width:1000px;margin:0 auto;align-items:flex-start}
@@ -179,11 +179,7 @@ if (!$roomId) { header('Location: index.php'); exit; }
   </style>
 </head>
 <body>
-<header>
-  <a class="back" href="index.php">← Lobby</a>
-  <span class="header-title">Ludo</span>
-  <span class="room-code">Sala <strong><?= htmlspecialchars($roomId) ?></strong></span>
-</header>
+<?php include '../shared/header.php'; ?>
 
 <!-- Waiting screen -->
 <div id="screen-waiting" class="screen active" style="min-height:calc(100vh - 68px)">

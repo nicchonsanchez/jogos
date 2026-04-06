@@ -4,6 +4,13 @@ $botDepth = isset($_GET['bot']) ? max(1,min(5,(int)$_GET['bot'])) : 0;
 $botMode  = $botDepth > 0;
 $paramColor = in_array($_GET['color']??'', ['white','black']) ? $_GET['color'] : 'white';
 function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
+include '../shared/icons.php';
+$accent    = '#ef4444';
+$title     = 'DAMAS';
+$subtitle  = 'Regras brasileiras · vs Bot';
+$backHref  = 'index.php';
+$backLabel = 'Lobby';
+$roomId    = $roomId ?: null;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -14,13 +21,10 @@ function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..700&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Damas — Partida</title>
+  <link rel="stylesheet" href="../shared/games.css">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#060712;color:#fff;font-family:'Open Sans','Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px;gap:12px}
     :root{--c:#ef4444}
-    a.back{font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:#333;text-decoration:none;align-self:flex-start}
-    a.back:hover{color:#888}
-    h2{font-size:1.2rem;letter-spacing:2px;color:#ef4444;text-shadow:0 0 20px #ef444444}
+    body{display:flex;flex-direction:column;align-items:center;gap:12px}
     .screen{display:none;flex-direction:column;align-items:center;gap:14px;width:100%}
     .screen.active{display:flex}
     .room-code{font-size:2.8rem;font-weight:900;letter-spacing:8px;color:#ef4444;text-shadow:0 0 30px #ef444455;background:#0b0d1e;border:1px solid #ef444433;border-radius:10px;padding:16px 32px}
@@ -83,9 +87,9 @@ function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
     }
   </style>
 </head>
-<body>
-<a class="back" href="index.php">← Damas</a>
-<h2>DAMAS</h2>
+<body style="padding:16px">
+<?php include '../shared/header.php'; ?>
+<div style="width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;gap:12px;margin:0 auto;padding-top:12px">
 
 <div class="screen <?= !$botMode && $roomId ? 'active' : '' ?>" id="screen-waiting">
   <p style="color:#555;font-size:.78rem">Sala criada! Compartilhe o código:</p>

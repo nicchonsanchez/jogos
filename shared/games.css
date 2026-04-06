@@ -1,0 +1,326 @@
+/* ═══════════════════════════════════════════════════════════
+   shared/games.css — Estilos compartilhados de todos os jogos
+   Cada jogo define --c (cor de destaque) no seu :root
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Paleta ── */
+:root {
+  --gm-bg:      #060712;
+  --gm-surface: #0b0d1e;
+  --gm-border:  #181b30;
+  --gm-border2: #101328;
+  --gm-input:   #060712;
+  --gm-input-br:#1c2035;
+  --gm-muted:   #5a5e7a;
+  --gm-dim:     #2e3255;
+}
+
+/* ── Reset + Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--gm-bg);
+  color: #fff;
+  font-family: 'Open Sans', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   Header
+   ═══════════════════════════════════════════════════════════ */
+.gm-header {
+  height: 58px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--gm-border);
+  background: linear-gradient(180deg, rgba(16,18,52,.45) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+}
+.gm-header-inner {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gm-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.gm-back {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gm-dim);
+  white-space: nowrap;
+  transition: color .15s;
+  flex-shrink: 0;
+}
+.gm-back:hover { color: var(--gm-muted); }
+.gm-back svg { flex-shrink: 0; }
+
+.gm-sep {
+  width: 1px;
+  height: 22px;
+  background: var(--gm-border);
+  flex-shrink: 0;
+}
+
+.gm-game-info { min-width: 0; }
+.gm-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--c, #fff);
+  line-height: 1;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--c, #fff) 30%, transparent);
+}
+.gm-subtitle {
+  font-size: .6rem;
+  color: var(--gm-dim);
+  letter-spacing: .5px;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gm-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+/* Código da sala (no header das rooms) */
+.gm-room-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gm-surface);
+  border: 1px solid var(--gm-border);
+  border-radius: 7px;
+  padding: 5px 8px 5px 12px;
+}
+.gm-room-label {
+  font-size: .52rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gm-dim);
+}
+.gm-room-code {
+  font-size: .88rem;
+  letter-spacing: 3px;
+  color: var(--c, #fff);
+  font-weight: 700;
+}
+.gm-copy-btn {
+  background: none;
+  border: none;
+  color: var(--gm-dim);
+  cursor: pointer;
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+  line-height: 0;
+}
+.gm-copy-btn:hover { color: #aaa; background: var(--gm-border); }
+
+/* Badge do jogador */
+.gm-player-badge {
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background .15s;
+}
+.gm-player-badge:hover { background: var(--gm-surface); }
+.gm-badge-name {
+  font-size: .78rem;
+  color: #ccc;
+  line-height: 1;
+}
+.gm-badge-sub {
+  font-size: .56rem;
+  letter-spacing: 1px;
+  color: var(--gm-dim);
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Lobby — conteúdo principal
+   ═══════════════════════════════════════════════════════════ */
+.gm-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.section-title {
+  font-size: .58rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--gm-dim);
+  margin-bottom: 14px;
+}
+
+/* ── Mode cards ── */
+.mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mode-card {
+  background: var(--gm-surface);
+  border: 1px solid var(--gm-border);
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color .15s, transform .12s, box-shadow .15s;
+  text-align: left;
+}
+.mode-card:hover {
+  border-color: var(--c, #4ade80);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--c, #4ade80) 10%, transparent);
+}
+.mode-card h3 { font-size: .95rem; color: #e8e8f0; margin-bottom: 5px; }
+.mode-card p  { font-size: .73rem; color: #444; line-height: 1.5; }
+.mode-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--c, #4ade80) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c, #4ade80) 22%, transparent);
+  color: var(--c, #4ade80);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+/* ── Formulários ── */
+.form-box {
+  background: var(--gm-surface);
+  border: 1px solid var(--gm-border);
+  border-radius: 10px;
+  padding: 20px;
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+.form-box.open { display: flex; }
+.form-row { display: flex; flex-direction: column; gap: 5px; }
+label {
+  font-size: .58rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #555;
+}
+input, select {
+  background: var(--gm-input);
+  border: 1px solid var(--gm-input-br);
+  border-radius: 5px;
+  color: #ddd;
+  font-family: inherit;
+  font-size: .88rem;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color .15s;
+  width: 100%;
+}
+input:focus, select:focus {
+  border-color: color-mix(in srgb, var(--c, #4ade80) 50%, transparent);
+}
+
+/* ── Botões ── */
+.btn {
+  padding: 9px 24px;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: .83rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .5px;
+  transition: all .12s;
+}
+.btn-primary { background: var(--c, #4ade80); color: #060712; }
+.btn-primary:hover:not(:disabled) { filter: brightness(1.12); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--gm-input-br);
+  color: #555;
+}
+.btn-ghost:hover { border-color: #555; color: #aaa; }
+.btn-sm { padding: 5px 14px; font-size: .75rem; }
+.btn:disabled { opacity: .38; cursor: default; }
+
+/* ── Opt buttons (cor/dificuldade) ── */
+.opt-row { display: flex; gap: 8px; }
+.opt-btn {
+  flex: 1;
+  padding: 7px 4px;
+  background: var(--gm-input);
+  border: 1px solid var(--gm-input-br);
+  border-radius: 5px;
+  color: #555;
+  font-size: .78rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all .12s;
+  font-family: inherit;
+}
+.opt-btn.active {
+  border-color: color-mix(in srgb, var(--c, #4ade80) 55%, transparent);
+  color: var(--c, #4ade80);
+  background: color-mix(in srgb, var(--c, #4ade80) 10%, transparent);
+}
+
+/* ── Lista de salas ── */
+.rooms-list { display: flex; flex-direction: column; gap: 8px; }
+.room-item {
+  background: var(--gm-surface);
+  border: 1px solid var(--gm-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.room-info h4 { font-size: .88rem; color: #ddd; margin-bottom: 3px; }
+.room-info small { font-size: .68rem; color: #444; }
+.room-empty {
+  color: var(--gm-dim);
+  font-size: .8rem;
+  padding: 24px 0;
+  text-align: center;
+}
+
+/* Join por código */
+.join-row { display: flex; gap: 8px; }
+.join-row input { flex: 1; text-transform: uppercase; letter-spacing: 2px; }
+
+/* Mensagens */
+.msg-err { color: #f87171; font-size: .73rem; display: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   Responsivo
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .gm-header { height: auto; padding: 12px 16px; }
+  .gm-subtitle { display: none; }
+  .mode-cards { grid-template-columns: 1fr; }
+  .gm-main { padding: 24px 16px 48px; }
+}

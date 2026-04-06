@@ -4,6 +4,13 @@ $botDepth = isset($_GET['bot']) ? max(1,min(3,(int)$_GET['bot'])) : 0;
 $botMode  = $botDepth > 0;
 $paramColor = in_array($_GET['color']??'', ['white','black']) ? $_GET['color'] : 'white';
 function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
+include '../shared/icons.php';
+$accent    = '#f59e0b';
+$title     = 'XADREZ';
+$subtitle  = 'Multiplayer · vs Bot';
+$backHref  = 'index.php';
+$backLabel = 'Lobby';
+$roomId    = $roomId ?: null;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -14,14 +21,11 @@ function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..700&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Xadrez — Partida</title>
+  <link rel="stylesheet" href="../shared/games.css">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#060712;color:#fff;font-family:'Open Sans','Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px;gap:12px}
     :root{--c:#f59e0b}
+    body{display:flex;flex-direction:column;align-items:center;gap:12px}
     a{color:var(--c);text-decoration:none}
-    .back{font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:#333;align-self:flex-start}
-    .back:hover{color:#888}
-    h2{font-size:1.2rem;letter-spacing:2px;color:#f59e0b;text-shadow:0 0 20px #f59e0b44}
 
     /* ── Screens ── */
     .screen{display:none;flex-direction:column;align-items:center;gap:14px;width:100%}
@@ -102,10 +106,9 @@ function esc($s){ return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
     }
   </style>
 </head>
-<body>
-
-<a class="back" href="index.php">← Xadrez</a>
-<h2>XADREZ</h2>
+<body style="padding:16px">
+<?php include '../shared/header.php'; ?>
+<div style="width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;gap:12px;margin:0 auto;padding-top:12px">
 
 <!-- Screen: Waiting -->
 <div class="screen <?= !$botMode && $roomId ? 'active' : '' ?>" id="screen-waiting">
