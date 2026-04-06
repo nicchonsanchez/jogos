@@ -157,7 +157,7 @@ function makeBoard() {
 }
 
 function cloneBoard(b){ return b.map(row=>row.map(c=>c?{...c}:null)); }
-function cloneState(s){ return {board:cloneBoard(s.board),turn:s.turn,mustCapture:s.mustCapture?{...s.mustCapture}:null,moveHistory:[...s.moveHistory],capturedW:s.capturedW,capturedB:s.capturedB}; }
+function cloneState(s){ return {board:cloneBoard(s.board),turn:s.turn,mustCapture:s.mustCapture?{...s.mustCapture}:null,moveHistory:[...s.moveHistory],capturedW:s.capturedW,capturedB:s.capturedB,noCaptureMoves:s.noCaptureMoves,positionHistory:[...s.positionHistory]}; }
 
 // Generate all legal moves for current state
 function generateMoves(s) {
@@ -280,6 +280,12 @@ function applyMove(s, m) {
   b[tr][tc]=piece;
 
   const capCount=m.steps.filter(st=>st.captured).length;
+  const noCaptureMoves = capCount > 0 ? 0 : (s.noCaptureMoves || 0) + 1;
+
+  // Serializa posição para detectar repetição
+  const posKey = boardKey(b) + '|' + (s.turn==='white'?'black':'white');
+  const positionHistory = [...(s.positionHistory||[]), posKey];
+
   const ns={
     board:b,
     turn:s.turn==='white'?'black':'white',
@@ -287,15 +293,55 @@ function applyMove(s, m) {
     moveHistory:[...s.moveHistory],
     capturedW: s.capturedW + (s.turn==='white' ? capCount : 0),
     capturedB: s.capturedB + (s.turn==='black' ? capCount : 0),
+    noCaptureMoves,
+    positionHistory,
   };
 
-  const desc=`${colorLabel(s.turn)} ${rc2label(fr,fc)}→${rc2label(tr,tc)}`;
+  const capStr = capCount > 0 ? ` (x${capCount})` : '';
+  const desc=`${colorLabel(s.turn)} ${rc2label(fr,fc)}→${rc2label(tr,tc)}${capStr}`;
   ns.moveHistory.push(desc);
   return ns;
 }
 
 function colorLabel(c){ return c==='white'?'⚪':'⚫'; }
 function rc2label(r,c){ return String.fromCharCode(65+c)+(8-r); }
+
+// Serializa o tabuleiro em string compacta para detectar repetição
+function boardKey(b) {
+  let k='';
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    const p=b[r][c];
+    if(!p) k+='.';
+    else k+=(p.color==='white'?'w':'b')+(p.king?'K':'p');
+  }
+  return k;
+}
+
+// Conta peças por tipo
+function countPieces(b) {
+  let wK=0,wP=0,bK=0,bP=0;
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    const p=b[r][c]; if(!p) continue;
+    if(p.color==='white') p.king?wK++:wP++;
+    else                  p.king?bK++:bP++;
+  }
+  return {wK,wP,bK,bP};
+}
+
+// Verifica regra de perseguição: damas vs 1 dama
+// Retorna o limite de movimentos sem captura para essa configuração, ou null se não se aplica
+function kingPursuitLimit(b) {
+  const {wK,wP,bK,bP}=countPieces(b);
+  // Só se aplica quando um lado tem apenas 1 dama e o outro tem só damas
+  const whiteOnlyKings = wP===0 && wK>0;
+  const blackOnlyKings = bP===0 && bK>0;
+  if(!whiteOnlyKings || !blackOnlyKings) return null;
+  // 2 damas vs 1 dama = empate imediato (não é possível forçar vitória)
+  const maxKings=Math.max(wK,bK), minKings=Math.min(wK,bK);
+  if(minKings===1 && maxKings===2) return 0;  // empate imediato
+  if(minKings===1 && maxKings<=5)  return 5;  // 5 movimentos para vencer
+  return null;
+}
 
 // ── Evaluation ────────────────────────────────────────────────────────────────
 function evaluate(s) {
@@ -346,7 +392,7 @@ function getBotMove(s) {
 // ═══════════════════════════════════════════════════════════════════════════════
 //  Game State
 // ═══════════════════════════════════════════════════════════════════════════════
-let gameState = {board:makeBoard(),turn:'white',mustCapture:null,moveHistory:[],capturedW:0,capturedB:0};
+let gameState = {board:makeBoard(),turn:'white',mustCapture:null,moveHistory:[],capturedW:0,capturedB:0,noCaptureMoves:0,positionHistory:[]};
 let selected  = null; // {r,c}
 let hintMoves = [];   // moves from selected piece
 let allMoves  = [];
@@ -443,10 +489,50 @@ function doBotMove() {
 }
 
 function checkGameOver() {
+  const s = gameState;
+
+  // Sem movimentos → derrota de quem não pode mover
   if(!allMoves.length){
-    const winner=gameState.turn==='white'?'Pretas':'Brancas';
+    const winner = s.turn==='white' ? 'Pretas' : 'Brancas';
     showResult(`${winner} vencem!`, 'Sem movimentos disponíveis', '🏆');
     if(!BOT_MODE) endGameOnServer((winner==='Brancas'?'white':'black')+'_wins','no_moves');
+    return;
+  }
+
+  // Regra dos 20 movimentos sem captura
+  if((s.noCaptureMoves||0) >= 20){
+    showResult('Empate!', 'Regra dos 20 movimentos sem captura', '🤝');
+    if(!BOT_MODE) endGameOnServer('draw','twenty_moves');
+    return;
+  }
+
+  // Repetição de posição (3 vezes)
+  const ph = s.positionHistory || [];
+  if(ph.length >= 3){
+    const last = ph[ph.length-1];
+    const count = ph.filter(p=>p===last).length;
+    if(count >= 3){
+      showResult('Empate!', 'Mesma posição repetida 3 vezes', '🤝');
+      if(!BOT_MODE) endGameOnServer('draw','repetition');
+      return;
+    }
+  }
+
+  // Regra de perseguição: damas vs 1 dama
+  const limit = kingPursuitLimit(s.board);
+  if(limit !== null){
+    if(limit === 0){
+      // 2 damas vs 1 dama = empate imediato
+      showResult('Empate!', '2 damas contra 1 dama — vitória impossível', '🤝');
+      if(!BOT_MODE) endGameOnServer('draw','king_pursuit');
+      return;
+    }
+    // Conta movimentos desde que a configuração se formou usando noCaptureMoves
+    if((s.noCaptureMoves||0) >= limit){
+      showResult('Empate!', `${limit} movimentos sem captura — regra de perseguição`, '🤝');
+      if(!BOT_MODE) endGameOnServer('draw','king_pursuit');
+      return;
+    }
   }
 }
 
@@ -490,7 +576,7 @@ function showScreen(id) {
 // ── Server sync ───────────────────────────────────────────────────────────────
 async function sendMoveToServer(m) {
   if(!ROOM_ID||!myToken) return;
-  const state={board:gameState.board,turn:gameState.turn,moveHistory:gameState.moveHistory,lastMove:m,mustCapture:gameState.mustCapture,capturedW:gameState.capturedW,capturedB:gameState.capturedB};
+  const state={board:gameState.board,turn:gameState.turn,moveHistory:gameState.moveHistory,lastMove:m,mustCapture:gameState.mustCapture,capturedW:gameState.capturedW,capturedB:gameState.capturedB,noCaptureMoves:gameState.noCaptureMoves,positionHistory:gameState.positionHistory};
   const body={action:'move',roomId:ROOM_ID,token:myToken,move:m,state};
   if(gameOver){ body.result=gameState.turn==='white'?'black_wins':'white_wins'; body.resultReason='no_moves'; }
   await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).catch(()=>{});
@@ -546,6 +632,8 @@ function applyServerState(state) {
     moveHistory:state.moveHistory||[],
     capturedW:state.capturedW||0,
     capturedB:state.capturedB||0,
+    noCaptureMoves:state.noCaptureMoves||0,
+    positionHistory:state.positionHistory||[],
   };
   if(state.lastMove) lastMove=state.lastMove;
   allMoves=generateMoves(gameState);
