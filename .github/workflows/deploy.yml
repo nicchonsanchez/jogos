@@ -15,15 +15,17 @@ jobs:
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server:   ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          server-dir: ${{ secrets.FTP_DIR }}
-          # Exclui arquivos que não devem subir para produção
+          server:      ${{ secrets.FTP_HOST }}
+          username:    ${{ secrets.FTP_USER }}
+          password:    ${{ secrets.FTP_PASS }}
+          server-dir:  ${{ secrets.FTP_DIR }}
+          protocol:    ftp
+          port:        21
+          timeout:     60000
+          log-level:   verbose
           exclude: |
             **/.git*
             **/.git*/**
             **/tarefas-md/**
             **/AGENTS.md
-            **/.htaccess.dev
             **/rooms/*.json
