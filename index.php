@@ -137,6 +137,7 @@ function esc(string $s): string {
       font-weight: normal;
       cursor: default;
       line-height: 1;
+      text-transform: uppercase;
     }
     h1 .bg-titulo {
       display: inline-block;
