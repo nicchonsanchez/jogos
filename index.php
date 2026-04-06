@@ -130,25 +130,27 @@ function esc(string $s): string {
       align-items: center;
       gap: 14px;
     }
-    h1 {
-      font-size: 46px;
-      color: white;
+    h1,
+    h1 * {
       font-family: 'Bauhaus 93', sans-serif;
+      font-size: 46px;
       font-weight: normal;
+      text-transform: uppercase;
+      color: white;
+    }
+    h1 {
       cursor: default;
       line-height: 1;
-      text-transform: uppercase;
+      display: flex;
+      align-items: center;
     }
     h1 .bg-titulo {
-      display: inline-block;
-      padding: 0 10px 0 8px;
+      padding: 0px 10px 0 8px;
       margin-left: 5px;
       background: linear-gradient(45deg, white, #cfcfcf);
       border-radius: 10px;
-      color: transparent;
     }
     h1 .bg-titulo .degrade-on {
-      display: inline-block;
       background: var(--verde);
       background-clip: text;
       -webkit-background-clip: text;
