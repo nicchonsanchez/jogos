@@ -1,0 +1,29 @@
+name: Deploy para Hostgator (FTP)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          server-dir: ${{ secrets.FTP_DIR }}
+          # Exclui arquivos que não devem subir para produção
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/tarefas-md/**
+            **/AGENTS.md
+            **/.htaccess.dev
+            **/rooms/*.json
