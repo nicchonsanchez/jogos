@@ -1,3 +1,13 @@
+<?php
+include '../shared/icons.php';
+$accent    = '#4ade80';
+$title     = 'COBRINHA';
+$subtitle  = 'Single player · 10 mapas · Ranking';
+$backHref  = '../';
+$backLabel = 'Jogos';
+$roomId    = null;
+function esc($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,7 +17,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/games.css">
   <style>
+    :root { --c: <?= $accent ?>; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -15,11 +27,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
       font-family: 'Open Sans','Segoe UI', sans-serif;
       color: #fff;
       padding: 16px;
+      padding-top: 24px;
       gap: 10px;
     }
 
@@ -433,7 +444,7 @@
 </head>
 <body>
 
-<a href="../" style="position:fixed;top:14px;left:16px;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#2e3255;text-decoration:none;transition:color .15s;z-index:10" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#2e3255'">← Jogos</a>
+<?php include '../shared/header.php'; ?>
 
 <h1>COBRINHA</h1>
 
@@ -1235,13 +1246,26 @@ let playerUser = null;   // { username, name }
 
 function showPlayerInfo() {
   const el = document.getElementById('player-info');
+  const badge = document.getElementById('gm-player-badge');
+  const badgeName = document.getElementById('gm-badge-name');
   if (playerUser?.username) {
     document.getElementById('player-label').textContent = `@${playerUser.username}`;
     el.style.display = 'flex';
+    if (badge && badgeName) {
+      badgeName.textContent = playerUser.name + '  @' + playerUser.username;
+      badge.style.display = 'flex';
+    }
   } else {
     el.style.display = 'none';
+    if (badge) badge.style.display = 'none';
   }
 }
+
+// Redirecionar clique no badge do header para o modal de login da snake
+document.addEventListener('DOMContentLoaded', () => {
+  const badge = document.getElementById('gm-player-badge');
+  if (badge) badge.onclick = () => openUserModal('Trocar conta');
+});
 
 function openUserModal(title = 'Bem-vindo!') {
   document.getElementById('modal-user-title').textContent = title;
