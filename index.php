@@ -82,15 +82,8 @@ function esc(string $s): string {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/bauhaus.css">
   <style>
-    @font-face {
-      font-family: 'Bauhaus 93';
-      src: url('shared/fonts/bauhaus-93/bauhaus-93.woff2') format('woff2'),
-           url('shared/fonts/bauhaus-93/bauhaus-93.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
     :root {
       --verde:   rgb(13, 226, 138);
       --azul-bg: #0d013a;
@@ -138,20 +131,23 @@ function esc(string $s): string {
       gap: 14px;
     }
     h1 {
-      font-size: 2rem;
-      color: #fff;
-      font-family: 'Bauhaus 93', 'Open Sans', sans-serif;
+      font-size: 46px;
+      color: white;
+      font-family: 'Bauhaus 93', sans-serif;
       font-weight: normal;
       cursor: default;
-      letter-spacing: 1px;
+      line-height: 1;
     }
     h1 .bg-titulo {
+      display: inline-block;
       padding: 0 10px 0 8px;
       margin-left: 5px;
       background: linear-gradient(45deg, white, #cfcfcf);
       border-radius: 10px;
+      color: transparent;
     }
     h1 .bg-titulo .degrade-on {
+      display: inline-block;
       background: var(--verde);
       background-clip: text;
       -webkit-background-clip: text;
