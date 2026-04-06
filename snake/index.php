@@ -24,14 +24,8 @@ function esc($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
 
     body {
       background: #060712;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       font-family: 'Open Sans','Segoe UI', sans-serif;
       color: #fff;
-      padding: 16px;
-      padding-top: 24px;
-      gap: 10px;
     }
 
     h1 {
@@ -446,6 +440,8 @@ function esc($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
 
 <?php include '../shared/header.php'; ?>
 
+<div class="gm-main" style="align-items:center;gap:10px;padding-top:20px;padding-bottom:40px">
+
 <h1>COBRINHA</h1>
 
 <div class="scoreboard">
@@ -499,6 +495,8 @@ function esc($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
 </div>
 
 <p class="hints">ESC — pausar &nbsp;&nbsp;|&nbsp;&nbsp; Enter — reiniciar</p>
+
+</div><!-- /gm-main -->
 
 <!-- ── Modal: perfil (login / criar) ── -->
 <div id="modal-user" class="modal hidden">
