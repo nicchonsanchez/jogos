@@ -1,0 +1,6 @@
+{
+  "name": "Xadrez 4 Jogadores",
+  "description": "Xadrez para 4 jogadores no tabuleiro 14×14. Multijogador em tempo real com salas e bots.",
+  "icon": "crown",
+  "color": "#8b5cf6"
+}
